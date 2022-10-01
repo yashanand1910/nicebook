@@ -40,6 +40,7 @@ pred invariantFriendsAreCommutative {
 }
 
 -- If a is a user then a can only be tagged 
+pred invariantUsersCanTagOnlyFriend
 
 pred invariantCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
@@ -58,7 +59,7 @@ pred Invariants {
 	invariantFriendsAreCommutative
 	invariantCommentsCannotHaveCycles
 	invariantUserOwnsAtleastOneContent
-	invariantCommentCannotBeDangling
+//	invariantCommentCannotBeDangling
 }
 
 assert assertion {
@@ -66,6 +67,6 @@ assert assertion {
 }
 
 run GenerateValidInstance {
-	some Comment
+//	some Comment
 	Invariants
 } //for 10 but exactly 5 User
