@@ -31,12 +31,12 @@ sig Tag {
 
 -- If a is a user then a cannot be friend o a
 pred invariantNoUserCanBeFriendsWithSelf {
-	all u : User | u not in u.isFriendOf // Loops are allowed though
+	all u : User | u not in u.friends // Loops are allowed though
 }
 
 -- If a and b are users then a is friend of b implies b is friend of a
 pred invariantFriendsAreCommutative {
-	all u1, u2 : User | u1 in u2.isFriendOf implies u2 in u1.isFriendOf
+	all u1, u2 : User | u1 in u2.friends implies u2 in u1.friends
 }
 
 -- If a is a user then a can only be tagged 
