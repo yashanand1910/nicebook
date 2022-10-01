@@ -1,13 +1,18 @@
+/****************
+ * Signatures
+*****************/
+
 sig User {
-	isFriendOf : set User
+	friends : set User
 }
 
-abstract sig Content {}
+abstract sig Content {
+	ownedBy : one User,
+}
 
 sig Photo extends Content {
 	// Can tag 0 or more User
-	ownedBy : one User,
-	tags : set User
+    tags : set Tag
 }
 
 sig Comment extends Content {
@@ -15,25 +20,37 @@ sig Comment extends Content {
 	commentedOn : one Content
 }
 
-pred invariantNoUserCanBeFriendsWithSelf {
-	// Loops are allowed though
-	all u : User | u not in u.isFriendOf
+sig Tag {
+    taggedUser : one User,
+    taggedBy : one User
 }
 
+/****************
+ * Invariants
+*****************/
+
+-- If a is a user then a cannot be friend o a
+pred invariantNoUserCanBeFriendsWithSelf {
+	all u : User | u not in u.isFriendOf // Loops are allowed though
+}
+
+-- If a and b are users then a is friend of b implies b is friend of a
 pred invariantFriendsAreCommutative {
 	all u1, u2 : User | u1 in u2.isFriendOf implies u2 in u1.isFriendOf
 }
 
-pred invariantCommentsCannotHaveCycles {
-	all com : Comment | com not in com.^commentedOn
+-- If a is a user then a can only be tagged 
+
+pred invariantCommentCannotBeDangling {
+	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
 
 pred invariantUserOwnsAtleastOneContent {
 	all u : User | u in Content.ownedBy
 }
 
-pred invariantCommentCannotBeDangling {
-	all com : Comment | (some p : Photo | p in com.^commentedOn)
+pred invariantCommentsCannotHaveCycles {
+	all com : Comment | com not in com.^commentedOn
 }
 
 pred Invariants {

@@ -26,12 +26,12 @@ this homework).
 
         \textbf {Answer:} The following are the constraints that cannot be expressed on the object model diagram
             \begin {enumerate}
-                \item $ \forall a, b: User \bullet b \in a.friends \implies a in b.friends $\\
-(If a and b are users then a is friend of b implies b is friend of a)
+                \item $ \forall a, b: User \bullet b \in a.friends \implies a \in b.friends $\\
+(If $a$ and $b$ are users then $a$ is friend of $b$ implies $b$ is friend of $a$)
                 \item $ \forall a : User \bullet a \notin a.friends $\\
-                    (If a is a user then a cannot be friend of a)
+                    (If $a$ is a user then $a$ cannot be friend of $a$)
                 \item $ \forall a : User \bullet \forall t : taggedUser.a \bullet t.taggedBy \subseteq t.friends $ \\
-                    (If a is user then a can only be tagged by a’s friends)
+                    (If $a$ is a user then $a$ can only be tagged by $a$’s friends)
             \end {enumerate}
 	\item Construct an Alloy model for this system. Your model must
 	      include:
