@@ -11,13 +11,11 @@ abstract sig Content {
 }
 
 sig Photo extends Content {
-	// Can tag 0 or more User
-    tags : set Tag
+    tags : set Tag  // Can tag 0 or more User
 }
 
 sig Comment extends Content {
-	// Can comment on only one Content
-	commentedOn : one Content
+	commentedOn : one Content // Can comment on only one Content
 }
 
 sig Tag {
@@ -40,7 +38,9 @@ pred invariantFriendsAreCommutative {
 }
 
 -- If a is a user then a can only be tagged 
-pred invariantUsersCanTagOnlyFriend {}
+pred invariantUsersCanTagOnlyFriend {
+	all t: Tag | (some u: User | u in t.taggedBy and u in t.taggedUser.friends)
+}
 
 pred invariantCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
@@ -57,16 +57,12 @@ pred invariantCommentsCannotHaveCycles {
 pred Invariants {
 	invariantNoUserCanBeFriendsWithSelf
 	invariantFriendsAreCommutative
+	invariantUsersCanTagOnlyFriend
 	invariantCommentsCannotHaveCycles
 	invariantUserOwnsAtleastOneContent
-//	invariantCommentCannotBeDangling
+	invariantCommentCannotBeDangling
 }
 
-//assert assertion {
-//	Invariants implies (whatever)
-//}
-
 run GenerateValidInstance {
-//	some Comment
 	Invariants
-} for 3 but exactly 5 Comment
+}
