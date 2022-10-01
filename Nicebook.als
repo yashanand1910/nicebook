@@ -1,54 +1,68 @@
+/****************
+ * Signatures
+*****************/
+
 sig User {
-	isFriendOf : set User
+	friends : set User
 }
 
-abstract sig Content {}
+abstract sig Content {
+	ownedBy : one User,
+}
 
 sig Photo extends Content {
-	// Can tag 0 or more User
-	ownedBy : one User,
-	tags : set User
+    tags : set Tag  // Can tag 0 or more User
 }
 
 sig Comment extends Content {
-	// Can comment on only one Content
-	commentedOn : one Content
+	commentedOn : one Content // Can comment on only one Content
 }
 
+sig Tag {
+    taggedUser : one User,
+    taggedBy : one User
+}
+
+/****************
+ * Invariants
+*****************/
+
+-- If a is a user then a cannot be friend o a
 pred invariantNoUserCanBeFriendsWithSelf {
-	// Loops are allowed though
-	all u : User | u not in u.isFriendOf
+	all u : User | u not in u.friends // Loops are allowed though
 }
 
+-- If a and b are users then a is friend of b implies b is friend of a
 pred invariantFriendsAreCommutative {
-	all u1, u2 : User | u1 in u2.isFriendOf implies u2 in u1.isFriendOf
+	all u1, u2 : User | u1 in u2.friends implies u2 in u1.friends
 }
 
-pred invariantCommentsCannotHaveCycles {
-	all com : Comment | com not in com.^commentedOn
-}
-
-pred invariantUserOwnsAtleastOneContent {
-	all u : User | u in Content.ownedBy
+-- If a is a user then a can only be tagged 
+pred invariantUsersCanTagOnlyFriend {
+	all t: Tag | (some u: User | u in t.taggedBy and u in t.taggedUser.friends)
 }
 
 pred invariantCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
 
+pred invariantUserOwnsAtleastOneContent {
+	all u : User | u in Content.ownedBy
+}
+
+pred invariantCommentsCannotHaveCycles {
+	all com : Comment | com not in com.^commentedOn
+}
+
 pred Invariants {
 	invariantNoUserCanBeFriendsWithSelf
 	invariantFriendsAreCommutative
+	invariantUsersCanTagOnlyFriend
 	invariantCommentsCannotHaveCycles
 	invariantUserOwnsAtleastOneContent
 	invariantCommentCannotBeDangling
 }
 
-assert assertion {
-	Invariants implies (whatever)
-}
-
 run GenerateValidInstance {
-	some Comment
 	Invariants
-} //for 10 but exactly 5 User
+}
