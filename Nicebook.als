@@ -54,19 +54,14 @@ pred invariantCommentsCannotHaveCycles {
 	all com : Comment | com not in com.^commentedOn
 }
 
--- A tag cannot be shared among multiple photos
-pred invariantPhotoCannotShareSameTag {
-	all p1, p2: Photo | all t: p1.tags | p1 != p2 implies t not in p2.tags
-}
-
 -- Same user cannot be tagged in a one photo
 pred invariantCannotTagSameUserInOnePhoto {
 	all t1, t2: Tag | t1 != t2 implies t1.taggedUser != t2.taggedUser 
 }
 
--- if there is a tag, it must be correlated with a photo
-pred invariantTagMustHavePhoto {
-	all t: Tag | one tags.t
+-- if there is a tag, it must be correlated with exactly one photo
+pred aTagInstanceMustBeAssociatedWithExactlyOnePhoto {
+	all t : Tag | one tags.t
 }
 
 pred Invariants {
@@ -77,7 +72,6 @@ pred Invariants {
 	invariantUserOwnsAtleastOneContent
 	invariantCommentCannotBeDangling
 	invariantCannotTagSameUserInOnePhoto
-	invariantPhotoCannotShareSameTag
 	invariantTagMustHavePhoto
 }
 
