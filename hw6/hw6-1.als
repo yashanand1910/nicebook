@@ -59,7 +59,7 @@ pred invariantTagIsAssociatedWithExactlyOnePhoto {
 
 -- Additional --
 
--- Comments cannot be dangling, last comment in a series should be attached to content
+-- Comments cannot be dangling, last comment should be attached to content
 pred invariantCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
