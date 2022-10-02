@@ -54,6 +54,17 @@ pred invariantCommentsCannotHaveCycles {
 	all com : Comment | com not in com.^commentedOn
 }
 
+-- Same user cannot be tagged in a one photo
+pred invariantCannotTagSameUserInOnePhoto {
+	all t1, t2: Tag | t1 != t2 implies t1.taggedUser != t2.taggedUser 
+}
+
+-- if there is a tag, it must be correlated with exactly one photo
+pred aTagInstanceMustBeAssociatedWithExactlyOnePhoto {
+	all t : Tag | one tags.t
+}
+
+
 pred Invariants {
 	invariantNoUserCanBeFriendsWithSelf
 	invariantFriendsAreCommutative
@@ -61,6 +72,8 @@ pred Invariants {
 	invariantCommentsCannotHaveCycles
 	invariantUserOwnsAtleastOneContent
 	invariantCommentCannotBeDangling
+	invariantCannotTagSameUserInOnePhoto
+	invariantTagMustHavePhoto
 }
 
 run GenerateValidInstance {
