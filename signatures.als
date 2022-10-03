@@ -10,12 +10,13 @@ sig Nicebook {
 
 sig User {
 	friends : set User,
-	userPrivacy : one PrivacyLevel
+	userViewPrivacy : one PrivacyLevel
+	commentPrivacy : one PrivacyLevel
 }
 
 abstract sig Content {
 	ownedBy : one User,
-	contentPrivacy : one PrivacyLevel
+	contentViewPrivacy : one PrivacyLevel,
 }
 
 sig Photo extends Content {
@@ -24,7 +25,8 @@ sig Photo extends Content {
 }
 
 sig Comment extends Content {
-	commentedOn : one Content // Can comment on only one Content
+	// Can comment on only one Content
+	commentedOn : one Content
 }
 
 sig Tag {
@@ -32,6 +34,21 @@ sig Tag {
 	taggedBy : one User
 }
 
+
+/*
+• Each piece of content owned by a user is associated a privacy level that determines 
+who is able to view that content on the user’s account.
+	-- Content Specific Setting
+
+• Each user has a setting that controls who is able to view content that is published 
+on the user’s account by other users.
+	-- Comments posted on your photos/and tagged photos
+	-- User Profile Content posted by other users 
+
+• Each user has a setting that controls who is able to add a comment to content 
+that is owned by the user.
+	-- Commenting Privileges for evert content (Photo/Comment)
+*/
 abstract sig PrivacyLevel {}
 
 one sig OnlyMe extends PrivacyLevel {}

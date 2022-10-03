@@ -1,7 +1,8 @@
-open signatures as s
-open constraints as c
-open actions as a
-open invariants as i
+open signatures as S
+open constraints as S
+open actions as AC
+open invariants as I
+open assertions as A
 
 pred Invariants {
 	constraintNoUserCanBeFriendsWithSelf
@@ -14,7 +15,6 @@ pred Invariants {
 	constraintCommentCannotBeDangling
 	constraintThereAreExactlyFourPrivacyLevels
 	constraintUserCanBeInExactlyOneNetwork
-	
 }
 
 /****************
