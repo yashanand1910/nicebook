@@ -2,6 +2,10 @@
  * SIGNATURES
  ****************/
 
+sig Nicebook {
+	users : set User
+}
+
 sig User {
 	friends : set User
 }
@@ -29,10 +33,12 @@ sig Tag {
 
 -- User cannot be a friend of itself
 pred invariantNoUserCanBeFriendsWithSelf {
-	all u : User | u not in u.friends // Note: Loops are allowed though
+	// Note: Loops are allowed
+	all u : User | u not in u.friends
 }
 
--- If a and b are users then a is friend of b implies b is friend of a
+-- If a and b are users then:
+-- a is friend of b implies b is friend of a
 pred invariantFriendsAreCommutative {
 	all u1, u2 : User | u1 in u2.friends implies u2 in u1.friends
 }
@@ -52,14 +58,14 @@ pred invariantCannotTagSameUserInOnePhoto {
 	all t1, t2: Tag | t1 != t2 implies t1.taggedUser != t2.taggedUser 
 }
 
--- if there is a tag, it must be correlated with exactly one photo
+-- If there is a tag, it must be correlated with exactly one photo
 pred invariantTagIsAssociatedWithExactlyOnePhoto {
 	all t : Tag | one tags.t
 }
 
 -- Additional --
 
--- Comments cannot be dangling, last comment should be attached to content
+-- Comments cannot be dangling, last comment should be attached to Photo
 pred invariantCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
