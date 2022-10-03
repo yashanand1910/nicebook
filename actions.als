@@ -1,5 +1,7 @@
 module actions
 
+open signatures as S
+
 /**
  * TODO: 
  * - Think about Arguments

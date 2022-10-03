@@ -10,7 +10,7 @@ sig Nicebook {
 
 sig User {
 	friends : set User,
-	userViewPrivacy : one PrivacyLevel
+	userViewPrivacy : one PrivacyLevel,
 	commentPrivacy : one PrivacyLevel
 }
 
