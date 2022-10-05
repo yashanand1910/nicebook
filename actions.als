@@ -31,18 +31,18 @@ pred removeComment [s1, s2: Nicebook, com : Comment, u : User] {
 
 
 //• addTag: Add a tag to an existing photo on a user’s account.
-pred addTag [s1, s2: Nicebook, p: Photo, t : Tag taggedBy : User, taggedUser : User] {
+pred addTag [s1, s2: Nicebook, p: Photo, t : Tag, taggedBy : User, taggedUser : User] {
 	// precondition
-	// tagTarget must be a friend of tagUser
-	tagTarget in tagUser.friends
+	// taggedUser must be a friend of tagUser
+	taggedUser in tagUser.friends
 	t not in p.tags
 
 	// postcondition
-	taggedTarget in t.taggedUser
+	taggedUser in t.taggedUser
 	taggedBy in t.taggedBy
 	some p2: Photo {
 		// add tag to the existing photo
-		p2 = p.tags + t
+		p2.tags = p.tags + t
 		some u2: User {
 			// user to be updated is the owner of the photo
 			let u1 = p.ownedBy
