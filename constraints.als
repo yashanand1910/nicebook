@@ -38,7 +38,7 @@ pred constraintUserOwnsAtleastOneContent {
 
 // Same user cannot be tagged twice in a photo
 pred constraintCannotTagSameUserInOnePhoto {
-	all t1, t2: Tag | t1 != t2 implies t1.taggedUser != t2.taggedUser 
+	all t1, t2: Tag | (tags.t1 = tags.t2) implies t1.taggedUser != t2.taggedUser
 }
 
 // If there is a tag, it must be correlated with exactly one photo

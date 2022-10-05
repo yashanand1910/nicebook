@@ -10,7 +10,9 @@ sig Nicebook {
 
 sig User {
 	friends : set User,
+	// Who can view Comments published by other users on user owned Photos
 	userViewPrivacy : one PrivacyLevel,
+	// Who can comment on user owned Content
 	commentPrivacy : one PrivacyLevel
 }
 
