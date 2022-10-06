@@ -33,8 +33,8 @@ pred addPhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
 -- removePhoto: Remove an existing photo from a user’s account
 pred removePhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
     // pre-condition:
-    p in s1.users.owns          // Photo must exist in s1
-    u1 in p[owns]                // Only owner can delete his photo
+    p in s1.users.owns              // Photo must exist in s1
+    u1 in p[owns]                   // Only owner can delete his photo
     
     // post-condition:
     some u2 : User {
@@ -70,8 +70,8 @@ pred addTag [s1, s2: Nicebook, p: Photo, t : Tag, u : User] {
 -- removeTag: Remove a tag from a photo
 pred removeTag [s1, s2: Nicebook, t : Tag, u1 : User] {
     // pre-condition:
-    t in s1.users.owns.tags                     // Tag must exist in s1
-    u1 in t[tags][owns] or u1 in t[hasTagged]     // ASSUMPTION: Only tag/photo owner can delete
+    t in s1.users.owns.tags                         // Tag must exist in s1
+    u1 in t[tags][owns] or u1 in t[hasTagged]       // ASSUMPTION: Only tag/photo owner can delete
 
     // post-condition:
     some u2 : User {
