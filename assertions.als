@@ -1,6 +1,6 @@
-/*************************
+/******************
  * ASSERTIONS
- **************************/
+ ******************/
 
 open signatures as S
 open constraints as C
@@ -16,7 +16,6 @@ open invariants as I
 assert NoPrivacyViolation {
 	// Asserts that no user can view any content that he/she is not supposed to
 }
-
 
 assert addPhotoPreservesInvariants {
 	all s1, s2 : Nicebook, p : Photo, u: User | 
