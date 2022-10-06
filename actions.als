@@ -38,7 +38,7 @@ pred removePhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
     
     // post-condition:
     some u2 : User {
-        u2.owns = u1.owns - p 
+        u2.owns = u1.owns - p - p[^commentedOn]       // Photo should no longer be owned by user
         
         // frame condition
         u2.commentPrivacy = u1.commentPrivacy

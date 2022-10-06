@@ -48,12 +48,10 @@ pred constraintCannotTagSameUserInOnePhoto {
 
 -- If there is a tag, it must be correlated with exactly one photo and that tag must contain exactly one user
 pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
-	all t : Tag | one tags.t
-	all t : Tag | one isTagged.t
-	all t : Tag | one hasTagged.t
+	all t : Tag | one tags.t and one isTagged.t and one hasTagged.t
 }
 
--- Comments cannot be dangling, last comment should be attached to Photo
+-- Comments cannot be dangling, first comment should be attached to Photo
 pred constraintCommentCannotBeDangling {
 	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }

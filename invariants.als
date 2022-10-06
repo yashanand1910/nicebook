@@ -16,15 +16,18 @@ pred Invariants[s : Nicebook] {
 }
 
 pred stateInvariants[s : Nicebook] {
-	invariantUserCanBeFriendsWithUsersInTheSameState[s]
+    invariantUserOnlyCanBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
 
 }
 
-pred invariantUserCanBeFriendsWithUsersInTheSameState[s: Nicebook] {
+-- Users cannot be friends with users in another Nicebook
+pred invariantUserOnlyCanBeFriendsWithUsersInTheSameState[s: Nicebook] {
 	s.users.friends in s.users
 }
 
+-- Content can be owned by only one user in a Nicebook
 pred invariantContentCanHaveOneOwnerInOneState[s : Nicebook] {
 	all c : s.users.owns | one (s.users & owns.c)
 }
+
