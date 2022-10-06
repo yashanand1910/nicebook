@@ -1,14 +1,26 @@
-module constraints
-
-open signatures as s
-
 /*************************
  * OBJECT CONSTRAINTS 
  **************************/
 
-pred constraintUserCanBeInExactlyOneNetwork {
-	all u : User | one users.u
+open signatures as s
+
+pred objectConstraints {
+	//constraintUserCanBeInExactlyOneNetwork
+	constraintThereAreExactlyFourPrivacyLevels
+	constraintNoUserCanBeFriendsWithSelf
+	constraintFriendsAreCommutative
+	constraintUsersCanBeTaggedByFriendsOnly
+	//constraintUserOwnsAtleastOneContent
+	constraintCannotTagSameUserInOnePhoto
+	constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers
+	constraintCommentCannotBeDangling
+	constraintCommentsCannotHaveCycles
 }
+
+// Commented out above
+//pred constraintUserCanBeInExactlyOneNetwork {
+//	all u : User | one users.u
+//}
 
 pred constraintThereAreExactlyFourPrivacyLevels {
 	#PrivacyLevel = 4
@@ -28,22 +40,25 @@ pred constraintFriendsAreCommutative {
 
 // Users can only be tagged by their friends
 pred constraintUsersCanBeTaggedByFriendsOnly {
-	all  t: Tag | t.taggedBy in t.taggedUser.friends
+	all  t: Tag | hasTagged.t in isTagged.t.friends
 }
 
 // User owns one or more content
-pred constraintUserOwnsAtleastOneContent {
-	all u : User | u in Content.ownedBy
-}
+//pred constraintUserOwnsAtleastOneContent {
+//	all u : User | some u.owns
+//}
 
 // Same user cannot be tagged twice in a photo
 pred constraintCannotTagSameUserInOnePhoto {
-	all t1, t2: Tag | (tags.t1 = tags.t2) implies t1.taggedUser != t2.taggedUser
+	all t1, t2: Tag | (tags.t1 = tags.t2) implies isTagged.t1 != isTagged.t2
 }
 
 // If there is a tag, it must be correlated with exactly one photo
-pred constraintTagIsAssociatedWithExactlyOnePhoto {
+// And that tag must contain exactly one user
+pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
 	all t : Tag | one tags.t
+	all t : Tag | one isTagged.t
+	all t : Tag | one hasTagged.t
 }
 
 // Comments cannot be dangling, last comment should be attached to Photo
