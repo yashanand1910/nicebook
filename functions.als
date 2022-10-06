@@ -1,4 +1,6 @@
-module functions
+/****************
+ * FUNCTIONS
+ ****************/
 
 open signatures as S
 

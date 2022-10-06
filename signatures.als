@@ -1,11 +1,9 @@
-module signatures
-
 /****************
  * SIGNATURES
  ****************/
 
 sig Nicebook {
-	users : set User
+	users : some User
 }
 
 sig User {
@@ -13,11 +11,14 @@ sig User {
 	// Who can view Comments published by other users on user owned Photos
 	userViewPrivacy : one PrivacyLevel,
 	// Who can comment on user owned Content
-	commentPrivacy : one PrivacyLevel
+	commentPrivacy : one PrivacyLevel,
+	hasTagged : set Tag,
+	isTagged : set Tag,
+	owns : some Content
 }
 
 abstract sig Content {
-	ownedBy : one User,
+	//ownedBy : one User,
 	contentViewPrivacy : one PrivacyLevel,
 }
 
@@ -32,8 +33,8 @@ sig Comment extends Content {
 }
 
 sig Tag {
-	taggedUser : one User,
-	taggedBy : one User
+	//taggedUser : one User,
+	//taggedBy : one User
 }
 
 
@@ -53,7 +54,7 @@ that is owned by the user.
 */
 abstract sig PrivacyLevel {}
 
-one sig OnlyMe extends PrivacyLevel {}
-one sig Friends extends PrivacyLevel {}
-one sig FriendsOfFriends extends PrivacyLevel {}
-one sig Everyone extends PrivacyLevel {}
+one sig PL_OnlyMe extends PrivacyLevel {}
+one sig PL_Friends extends PrivacyLevel {}
+one sig PL_FriendsOfFriends extends PrivacyLevel {}
+one sig PL_Everyone extends PrivacyLevel {}
