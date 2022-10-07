@@ -16,24 +16,12 @@ pred Invariants[s : Nicebook] {
 }
 
 pred stateInvariants[s : Nicebook] {
-<<<<<<< HEAD
-    invariantUserOnlyCanBeFriendsWithUsersInTheSameState[s]
-||||||| 208d15e
-	invariantUserCanBeFriendsWithUsersInTheSameState[s]
-=======
-	invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
->>>>>>> origin/feature/saloni
+    invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
 }
 
-<<<<<<< HEAD
 -- Users cannot be friends with users in another Nicebook
-pred invariantUserOnlyCanBeFriendsWithUsersInTheSameState[s: Nicebook] {
-||||||| 208d15e
-pred invariantUserCanBeFriendsWithUsersInTheSameState[s: Nicebook] {
-=======
 pred invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s: Nicebook] {
->>>>>>> origin/feature/saloni
 	s.users.friends in s.users
 }
 

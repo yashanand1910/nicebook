@@ -22,14 +22,6 @@ pred constraintThereAreExactlyFourPrivacyLevels {
 	#PrivacyLevel = 4
 }
 
-<<<<<<< HEAD
--- Dangling users cannot exist
-pred constraintNoDanglingUsers {
-    Nicebook.users = User
-}
-
-||||||| 208d15e
-=======
 pred constraintUserNeedsToBelongToNicebook {
 	User = Nicebook.users
 }
@@ -38,7 +30,6 @@ pred contentNeedsToBelongToUser {
 	Content = User.owns
 }
 
->>>>>>> origin/feature/saloni
 -- User cannot be a friend of itself
 pred constraintNoUserCanBeFriendsWithSelf {
 	// Note: Loops are allowed
@@ -70,20 +61,6 @@ pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
 	all t : Tag | one tags.t and one isTagged.t and one hasTagged.t
 }
 
-<<<<<<< HEAD
--- Comments cannot be dangling, first comment should be attached to Photo
-pred constraintCommentCannotBeDangling {
-	all com : Comment | (some p : Photo | p in com.^commentedOn)
-}
-
-||||||| 208d15e
--- Comments cannot be dangling, last comment should be attached to Photo
-pred constraintCommentCannotBeDangling {
-	all com : Comment | (some p : Photo | p in com.^commentedOn)
-}
-
-=======
->>>>>>> origin/feature/saloni
 -- Comments should not have cycles
 pred constraintCommentsCannotHaveCycles {
 	all com : Comment | com not in com.^commentedOn
