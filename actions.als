@@ -34,14 +34,17 @@ pred addPhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
 }
 
 -- removePhoto: Remove an existing photo from a user’s account
-pred removePhoto [s1, s2: Nicebook, p : Photo, u : User] {
+pred removePhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
     // pre-condition:
     p in s1.users.owns              // Photo must exist in s1
-    u in p[owns]                   // Only owner can delete his photo
+    u1 in p[owns]                   // Only owner can delete his photo
     
     // post-condition:
-    all u1 : (p[owns] + p[^commentedOn][owns]) | some u2 : s2.users {
-        u2.owns = u1.owns - p - p[^commentedOn]       // Photo should no longer be owned by user
+    some u2 : s2.users {
+        u2.owns = u1.owns - p       // Photo should no longer be owned by user
+
+        -- Note: This doesn't delink comments on this photo
+        -- The comments visibility will be taken care by privacy fucntions
         
         // frame condition
         u2.commentPrivacy = u1.commentPrivacy

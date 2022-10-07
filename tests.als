@@ -22,9 +22,8 @@ run GenerateAddPhotoValidInstance {
 check addPhotoPreservesInvariants for 5
 
 run GenerateRemovePhotoInstances {
-    some s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users |
-        Invariants[s1] and some p[commentedOn] and removePhoto[s1, s2, p, u] and Invariants[s2]
-        and (some u2 : s1.users | u != u2 and u2 in p[commentedOn][owns])
-} for 5 but 2 Nicebook
+    some s1, s2 : Nicebook, p : s1.users.owns & Photo, u1 : s1.users |
+        Invariants[s1] and some p[commentedOn] and removePhoto[s1, s2, p, u1] and Invariants[s2]
+} for 5 but 2 Nicebook, exactly 3 User, 3 Comment
 
 check removePhotoPreservesInvariants for 5
