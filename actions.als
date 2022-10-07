@@ -12,22 +12,28 @@ open signatures as S
  */
 
 -- addPhoto: Upload a photo to be published on a user’s account.
+// TODO: Saloni
 pred addPhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
-	// TODO: Saloni
 	// Pre
-		// No user owns this Photo in the pre-state
-		p not in s1.users.owns
-		no p.tags
+	u1 in s1.users
+	p not in s1.users.owns
+	no p.tags
+
 	// Post
-		// Find a user in the post-state who is exactly like arg: user
-		one u2 : s2.users {
-			u2.commentPrivacy = u1.commentPrivacy
-			u2.userViewPrivacy = u1.userViewPrivacy
-			u2.friends = u1.friends
-			u2.owns = u1.owns + p
-			u2.isTagged = u1.isTagged
-			u2.hasTagged = u1.hasTagged
-		}
+	one u2 : s2.users {
+		-- Add photo
+		u2.owns = u1.owns + p
+
+		// Frame
+		u2.commentPrivacy = u1.commentPrivacy
+		u2.userViewPrivacy = u1.userViewPrivacy
+		u2.friends = u1.friends
+		u2.isTagged = u1.isTagged
+		u2.hasTagged = u1.hasTagged
+		
+		// Replace user
+		s2.users = s1.users - u1 + u2
+	}
 }
 
 -- removePhoto: Remove an existing photo from a user’s account
@@ -94,4 +100,3 @@ pred removeTag [s1, s2: Nicebook, t : Tag, u1 : User] {
         s2.users = s1.users + u2 - u1
     }
 }
-
