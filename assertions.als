@@ -21,3 +21,8 @@ assert addPhotoPreservesInvariants {
 	all s1, s2 : Nicebook, p : Photo, u: User |
 		 Invariants[s1] and addPhoto[s1, s2, p, u] implies Invariants[s2]
 }
+
+assert removePhotoPreservesInvariants {
+	all s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users |
+		Invariants[s1] and removePhoto[s1, s2, p, u] implies Invariants[s2]
+}
