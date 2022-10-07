@@ -15,6 +15,13 @@ fun canView[u : User] : set Content {
 	}
 }
 
+<<<<<<< HEAD
+// Returns the set of Content that a user can view
+// fun canView[u : User] : set Content {}
+||||||| b51a46f
+// Returns the set of Content that a user can view
+fun canView[u : User] : set Content {}
+=======
 -- Return set of content that user can comment on
 -- The user must have the privilege to comment on parent Comments/Photo
 fun canCommentOn[u : User] : set Content {
@@ -75,3 +82,4 @@ fun getTagsInState[s : Nicebook] : set Tag {
 		t : allTags | (isTagged.t in s.users)
 	}
 }
+>>>>>>> stable

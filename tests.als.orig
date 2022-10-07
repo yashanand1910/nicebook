@@ -13,12 +13,24 @@ open functions as F
  * RUN 
  ****************/
 
+<<<<<<< HEAD
+run GenerateAddPhotoValidInstance {
+||||||| b51a46f
+run GenerateValidInstance {
+=======
 run GenerateAddPhotoValidInstance {
 	#Nicebook = 2
+>>>>>>> stable
 	some s1, s2: Nicebook, p:Photo, u:User | some s1.users and some s2.users and
 		(Invariants[s1] and addPhoto[s1,s2,p,u] and Invariants[s2]) and s1 != s2
 }
+<<<<<<< HEAD
 
+||||||| b51a46f
+
+
+=======
+>>>>>>> stable
 check addPhotoPreservesInvariants for 5
 
 run GenerateRemovePhotoInstances {

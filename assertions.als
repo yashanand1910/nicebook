@@ -18,8 +18,8 @@ assert NoPrivacyViolation {
 }
 
 assert addPhotoPreservesInvariants {
-	all s1, s2 : Nicebook, p : Photo, u: User | 
-		Invariants[s1] and addPhoto[s1, s2, p, u] implies Invariants[s2]
+	all s1, s2 : Nicebook, p : Photo, u: User |
+		 Invariants[s1] and addPhoto[s1, s2, p, u] implies Invariants[s2]
 }
 
 assert removePhotoPreservesInvariants {

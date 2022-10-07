@@ -25,7 +25,7 @@ pred contentNeedsToBelongToUser {
 
 -- User cannot be a friend of itself
 pred constraintNoUserCanBeFriendsWithSelf {
-	-- Note: Loops are allowed
+	// Note: Loops are allowed
 	all u : User | u not in u.friends
 }
 
@@ -46,7 +46,15 @@ pred constraintCannotTagSameUserInOnePhoto {
 
 -- If there is a tag, it must be correlated with exactly one photo and that tag must contain exactly one user
 pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
+<<<<<<< HEAD
+	all t : Tag | one tags.t and one isTagged.t and one hasTagged.t
+||||||| b51a46f
+	all t : Tag | one tags.t
+	all t : Tag | one isTagged.t
+	all t : Tag | one hasTagged.t
+=======
 	all t : Tag | one tags.t and one isTagged.t and  one hasTagged.t
+>>>>>>> stable
 }
 
 -- Comments should not have cycles
