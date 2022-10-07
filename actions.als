@@ -40,7 +40,7 @@ pred removePhoto [s1, s2: Nicebook, p : Photo, u : User] {
     u in p[owns]                   // Only owner can delete his photo
     
     // post-condition:
-    all u1 : (p[^commentedOn][owns] + p[owns]) | some u2 : s2.users {
+    all u1 : (p[owns] + p[^commentedOn][owns]) | some u2 : s2.users {
         u2.owns = u1.owns - p - p[^commentedOn]       // Photo should no longer be owned by user
         
         // frame condition

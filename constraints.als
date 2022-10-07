@@ -8,7 +8,6 @@ pred objectConstraints {
 	constraintUserNeedsToBelongToNicebook
 	contentNeedsToBelongToUser
 	constraintThereAreExactlyFourPrivacyLevels
-    constraintNoDanglingUsers
 	constraintNoUserCanBeFriendsWithSelf
 	constraintFriendsAreCommutative
 	constraintUsersCanBeTaggedByFriendsOnly
