@@ -6,6 +6,7 @@ open signatures as s
 
 pred objectConstraints {
 	constraintThereAreExactlyFourPrivacyLevels
+    constraintNoDanglingUsers
 	constraintNoUserCanBeFriendsWithSelf
 	constraintFriendsAreCommutative
 	constraintUsersCanBeTaggedByFriendsOnly
@@ -20,9 +21,14 @@ pred constraintThereAreExactlyFourPrivacyLevels {
 	#PrivacyLevel = 4
 }
 
+-- Dangling users cannot exist
+pred constraintNoDanglingUsers {
+    Nicebook.users = User
+}
+
 -- User cannot be a friend of itself
 pred constraintNoUserCanBeFriendsWithSelf {
-	-- Note: Loops are allowed
+	// Note: Loops are allowed
 	all u : User | u not in u.friends
 }
 
