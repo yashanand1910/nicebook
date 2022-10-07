@@ -5,16 +5,23 @@
 open signatures as s
 
 pred objectConstraints {
-	//constraintUserCanBeInExactlyOneNetwork
+	constraintUserNeedsToBelongToNicebook
+	contentNeedsToBelongToUser
 	constraintThereAreExactlyFourPrivacyLevels
 	constraintNoUserCanBeFriendsWithSelf
 	constraintFriendsAreCommutative
 	constraintUsersCanBeTaggedByFriendsOnly
-	//constraintUserOwnsAtleastOneContent
 	constraintCannotTagSameUserInOnePhoto
 	constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers
-	constraintCommentCannotBeDangling
 	constraintCommentsCannotHaveCycles
+}
+
+pred constraintUserNeedsToBelongToNicebook {
+	User = Nicebook.users
+}
+
+pred contentNeedsToBelongToUser {
+	Content = User.owns
 }
 
 // Commented out above
@@ -50,7 +57,7 @@ pred constraintUsersCanBeTaggedByFriendsOnly {
 
 // Same user cannot be tagged twice in a photo
 pred constraintCannotTagSameUserInOnePhoto {
-	all t1, t2: Tag | (tags.t1 = tags.t2) implies isTagged.t1 != isTagged.t2
+	all t1, t2: Tag | (tags.t1 != tags.t2) implies isTagged.t1 != isTagged.t2
 }
 
 // If there is a tag, it must be correlated with exactly one photo
@@ -59,11 +66,6 @@ pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
 	all t : Tag | one tags.t
 	all t : Tag | one isTagged.t
 	all t : Tag | one hasTagged.t
-}
-
-// Comments cannot be dangling, last comment should be attached to Photo
-pred constraintCommentCannotBeDangling {
-	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
 
 // Comments should not have cycles
