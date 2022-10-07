@@ -5,16 +5,23 @@
 open signatures as s
 
 pred objectConstraints {
-	//constraintUserCanBeInExactlyOneNetwork
+	constraintUserNeedsToBelongToNicebook
+	contentNeedsToBelongToUser
 	constraintThereAreExactlyFourPrivacyLevels
 	constraintNoUserCanBeFriendsWithSelf
 	constraintFriendsAreCommutative
 	constraintUsersCanBeTaggedByFriendsOnly
-	//constraintUserOwnsAtleastOneContent
 	constraintCannotTagSameUserInOnePhoto
 	constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers
-	constraintCommentCannotBeDangling
 	constraintCommentsCannotHaveCycles
+}
+
+pred constraintUserNeedsToBelongToNicebook {
+	User = Nicebook.users
+}
+
+pred contentNeedsToBelongToUser {
+	Content = User.owns
 }
 
 // Commented out above
@@ -59,11 +66,6 @@ pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
 	all t : Tag | one tags.t
 	all t : Tag | one isTagged.t
 	all t : Tag | one hasTagged.t
-}
-
-// Comments cannot be dangling, last comment should be attached to Photo
-pred constraintCommentCannotBeDangling {
-	all com : Comment | (some p : Photo | p in com.^commentedOn)
 }
 
 // Comments should not have cycles

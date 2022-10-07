@@ -78,6 +78,8 @@ pred addTag [s1, s2: Nicebook, p: Photo, u1: User, t : Tag, taggee : User, tagge
 			s2.users = s1.users - u1 + u2
 		}
 	}
+
+	
 }
 
 
