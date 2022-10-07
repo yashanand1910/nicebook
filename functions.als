@@ -61,3 +61,17 @@ fun rawCanCommentOn[u : User] : set Content {
 		(s.users & commentPrivacy.PL_Everyone).owns)
 	}
 }
+
+-- For a Content to be present in a state, all its parents must have owner in current state
+fun getContentsInState[s : Nicebook] : set Content {
+	let allContent = s.users.owns | { 
+		c : allContent | owns.(c.^commentedOn) in s.users
+	}
+}
+
+-- For a Tag to be present in a state, the tagged user must be present in state
+fun getTagsInState[s : Nicebook] : set Tag {
+	let allTags = (Photo & s.users.owns).tags | { 
+		t : allTags | (isTagged.t in s.users)
+	}
+}
