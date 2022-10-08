@@ -18,9 +18,10 @@ pred addPhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
 	u1 in s1.users
 	p not in s1.users.owns
 	no p.tags
+	no commentedOn.p
 
 	// Post
-	one u2 : s2.users {
+	some u2 : User {
 		-- Add photo
 		u2.owns = u1.owns + p
 
