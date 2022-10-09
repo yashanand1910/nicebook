@@ -97,10 +97,9 @@ pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 }
 
 -- addTag: Add a tag to an existing photo on a user’s account.
-pred addTag [s1, s2: Nicebook, p: Photo, taggee : User, tagger : User] {
+pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
 	// precondition
-	// tagee must be a friend of tagger
-	taggee in tagger.friends
+	canUserAddTag[tagger, taggee, p, s1]
 
 	// postcondition
 	some t: Tag {
@@ -114,14 +113,10 @@ pred addTag [s1, s2: Nicebook, p: Photo, taggee : User, tagger : User] {
 			taggee2.isTagged = taggee.isTagged + t
 
 			// frame condition
-			taggee2.owns = taggee.owns
-			taggee2.commentPrivacy = taggee.commentPrivacy
-        	taggee2.userViewPrivacy = taggee.userViewPrivacy
-        	taggee2.hasTagged = taggee.hasTagged
-			taggee2.friends = taggee.friends
+			ModifyTagFrame[taggee2, taggee]
 			
 			// promote the taggee
-			s2.users = s1.users - taggee + taggee2
+			ReplaceUser[s1, taggee, s2, taggee2]
 		}
 	}
 }
