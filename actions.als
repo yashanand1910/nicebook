@@ -102,22 +102,19 @@ pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
 	canUserAddTag[tagger, taggee, p, s1]
 
 	// postcondition
-	some t: Tag {
+	some t: Tag, taggee_new: User {
 		t not in taggee.isTagged
 
-		//t not in s1.users.owns.tags
 		t in p.tags
 		t in tagger.hasTagged
 
-		some taggee2: s2.users {
-			taggee2.isTagged = taggee.isTagged + t
+		taggee_new.isTagged = taggee.isTagged + t
 
-			// frame condition
-			ModifyTagFrame[taggee2, taggee]
-			
-			// promote the taggee
-			ReplaceUser[s1, taggee, s2, taggee2]
-		}
+		// frame condition
+		ModifyTagFrame[taggee_new, taggee]
+		
+		// promote the taggee
+		ReplaceUser[s1, taggee, s2, taggee_new]
 	}
 }
 
