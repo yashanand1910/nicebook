@@ -11,8 +11,8 @@ open signatures as S
  * - User should have the privilege to view comments of parent Comments/Photo
  */
 fun canView[u : User, s: Nicebook] : set Content {
-	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u, s], 
-		r3 = rawCanViewContentComments[u, s] | r1 & {
+	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u], 
+		r3 = rawCanViewContentComments[u] | r1 & {
 			(u.owns + u.owns[^commentedOn]) +
 			{c : r2 | c.^commentedOn in r2 and c.^commentedOn in r3}
 		}
@@ -24,7 +24,7 @@ fun canView[u : User, s: Nicebook] : set Content {
  * - The user must have the privilege to comment on parent Comments/Photo
  */
 fun canCommentOn[u : User, s: Nicebook] : set Content {
-	let r1 = getContentsInState[s], r2 = rawCanCommentOn[u, s] | r1 & {
+	let r1 = getContentsInState[s & users.u], r2 = rawCanCommentOn[u] | r1 & {
 		(u.owns + u.owns[^commentedOn]) +
 		{c :  r2 | c.^commentedOn in r2}
 	}
@@ -36,11 +36,11 @@ fun canCommentOn[u : User, s: Nicebook] : set Content {
  * - Do not consider nesting
  * - Considers user specific commenting privacy setting
  */
-fun rawCanCommentOn[u : User, s: Nicebook] : set Content {
+fun rawCanCommentOn[u : User] : set Content {
 	u.owns +
 	(u.friends & commentPrivacy.PL_Friends).owns +
 	((u.friends + u.friends.friends) & commentPrivacy.PL_FriendsOfFriends).owns +
-	(s.users & commentPrivacy.PL_Everyone).owns
+	(commentPrivacy.PL_Everyone).owns
 }
 
 /**
@@ -48,7 +48,7 @@ fun rawCanCommentOn[u : User, s: Nicebook] : set Content {
  * - Do not consider nested Contents priviledges
  * - Considers content level privacy
  */
-fun rawCanViewContent[u : User, s: Nicebook] : set Content {
+fun rawCanViewContent[u : User] : set Content {
 	u.owns +
 	(u.friends.owns & contentViewPrivacy.PL_Friends) +
 	((u.friends.friends.owns + u.friends.owns) & contentViewPrivacy.PL_FriendsOfFriends) +
@@ -60,7 +60,7 @@ fun rawCanViewContent[u : User, s: Nicebook] : set Content {
  *  - Do not consider nested Contents
  *  - Considers user level privacy
 */
-fun rawCanViewContentComments[u : User, s: Nicebook] : set Content {
+fun rawCanViewContentComments[u : User] : set Content {
 	u.owns +
 	(u.friends & userViewPrivacy.PL_Friends).owns + 
 	((u.friends + u.friends.friends) & userViewPrivacy.PL_FriendsOfFriends).owns + 
@@ -88,14 +88,23 @@ fun getTagsInState[s : Nicebook] : set Tag {
 	}
 }
 
+/**
+ * Returns owner of content in a particular state
+ */
 fun getContentOwnerInState[c : Content, s : Nicebook] : set User {
 	{owns.c & s.users}
 }
 
+/**
+ * Return contents owned by user in a state
+ */
 fun getUserOwnedContentsInState[u : User, s : Nicebook] : set Content {
 	{u.owns & getContentsInState[s]}
 }
 
+/**
+ * Return friends of user in a state
+ */
 fun getFriendsInState[u : User, s : Nicebook] : set User{
 	{u.friends & s.users}
 }
