@@ -5,7 +5,9 @@
 open signatures
 open constraints
 open functions
+open predicates
 
+// Comment chain should exist in state
 /**
  * TODO:
  * - Think about what are the conditions that need to get satisfied for every action
@@ -20,6 +22,8 @@ pred stateInvariants[s : Nicebook] {
 	// invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
 	invariantUsersCanBeTaggedByFriendsOnly[s]
+	invaraintNoCommentIsPresentWithoutPrivileges[s]
+	invariantNoTagIsPresentWithoutPrivileges[s]
 }
 
 -- A user cannot be friends with a user who is not in the same stae
@@ -35,4 +39,17 @@ pred invariantContentCanHaveOneOwnerInOneState[s : Nicebook] {
 -- Users can only be tagged by their friends
 pred invariantUsersCanBeTaggedByFriendsOnly[s : Nicebook] {
 	all t : getTagsInState[s] | hasTagged.t in isTagged.t.friends
+}
+
+pred invaraintNoCommentIsPresentWithoutPrivileges[s : Nicebook] {
+	all com : getContentsInState[s] | 
+		let com_owner = com[owns], com_content = com.commentedOn | {
+			checkAddCommentPrivilege[com_owner, com_content, s]
+		}
+}
+
+pred invariantNoTagIsPresentWithoutPrivileges[s : Nicebook] {
+	all t : getTagsInState[s] | let tagger = hasTagged.t, taggee = isTagged.t, p = tags.t | {
+		checkAddTagPrivileges[tagger, taggee, p, s]
+	}
 }
