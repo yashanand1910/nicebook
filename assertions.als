@@ -46,15 +46,22 @@ assert addPhotoPreservesInvariants {
 
 assert removePhotoPreservesInvariants {
 	all s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users |
-		Invariants[s1] and removePhoto[s1, s2, p, u] implies Invariants[s2]
+		s1 != s2 and Invariants[s1] and removePhoto[s1, s2, p, u] implies Invariants[s2]
 }
 
 assert addCommentPreservesInvariants {
 	all s1, s2 : Nicebook, com : Comment, c : Content, u: User |
-		 Invariants[s1] and addComment[s1, s2, com, c, u] implies Invariants[s2]
+		s1 != s2 and Invariants[s1] and addComment[s1, s2, com, c, u] implies Invariants[s2]
 }
 
 assert removeCommentPreservesInvariants {
 	all s1, s2 : Nicebook, com : Comment, u: User |
-		 Invariants[s1] and removeComment[s1, s2, com, u] implies Invariants[s2]
+		 s1 != s2 and Invariants[s1] and removeComment[s1, s2, com, u] implies Invariants[s2]
+}
+
+// TODO: Kaz / addPhotoPreservesInvariants
+
+assert removeTagPreservesInvariants {
+    all s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users, taggee : p.tags[isTagged] |
+        s1 != s2 and Invariants[s1] and removeTag[s1, s2, p, taggee, u] implies Invariants[s2]
 }
