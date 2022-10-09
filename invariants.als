@@ -17,7 +17,7 @@ pred Invariants[s : Nicebook] {
 }
 
 pred stateInvariants[s : Nicebook] {
-	invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
+	// invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
 	invariantUsersCanBeTaggedByFriendsOnly[s]
 }

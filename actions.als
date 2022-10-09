@@ -80,24 +80,24 @@ pred addTag [s1, s2: Nicebook, p: Photo, taggee : User, tagger : User] {
 
 	// postcondition
 	some t: Tag {
-		t not in tagger.isTagged
+		t not in taggee.isTagged
 
-		// a tag should be viewable in the current state
-		t in getTagsInState[s2]
+		//t not in s1.users.owns.tags
 		t in p.tags
-		t in taggee.hasTagged
+		t in tagger.hasTagged
 
-		some tagger2: s2.users {
-			tagger2.isTagged = tagger.isTagged + t
+		some taggee2: s2.users {
+			taggee2.isTagged = taggee.isTagged + t
 
 			// frame condition
-			tagger2.commentPrivacy = tagger.commentPrivacy
-        	tagger2.userViewPrivacy = tagger.userViewPrivacy
-        	tagger2.friends = tagger.friends
-        	tagger2.hasTagged = tagger.hasTagged
+			taggee2.owns = taggee.owns
+			taggee2.commentPrivacy = taggee.commentPrivacy
+        	taggee2.userViewPrivacy = taggee.userViewPrivacy
+        	taggee2.hasTagged = taggee.hasTagged
+			taggee2.friends = taggee.friends
 			
-			// promote the tagger
-			s2.users = s1.users - tagger + tagger2
+			// promote the taggee
+			s2.users = s1.users - taggee + taggee2
 		}
 	}
 }

@@ -46,7 +46,7 @@ pred constraintCannotTagSameUserInOnePhoto {
 
 -- If there is a tag, it must be correlated with exactly one photo and that tag must contain exactly one user
 pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
-	all t : Tag | one tags.t and one isTagged.t and  one hasTagged.t
+	all t : Tag | one tags.t and one isTagged.t and one hasTagged.t
 }
 
 -- Comments should not have cycles
