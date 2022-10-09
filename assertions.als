@@ -63,6 +63,11 @@ assert addCommentPreservesInvariants {
 		 Invariants[s1] and addComment[s1, s2, com, c, u] implies Invariants[s2]
 }
 
+assert addTagPreservesInvariants {
+	all s1, s2 : Nicebook, p : Photo, taggee, tagger: User |
+		 Invariants[s1] and addTag[s1, s2, p, taggee, tagger] implies Invariants[s2]
+}
+
 assert removeCommentPreservesInvariants {
 	all s1, s2 : Nicebook, com : Comment, u: User |
 		 Invariants[s1] and removeComment[s1, s2, com, u] implies Invariants[s2]

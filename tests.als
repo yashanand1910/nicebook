@@ -44,4 +44,12 @@ run GenerateRemoveCommentValidInstance {
 
 check removeCommentPreservesInvariants for 5
 
+run GenerateAddTagValidInstance {
+	#Nicebook = 2
+	some s1, s2: Nicebook, p: Photo, taggee: User, tagger: User | some s1.users and
+		Invariants[s1] and addTag[s1,s2,p,taggee,tagger] and Invariants[s2] and s1 != s2
+} for 5
+
+check addTagPreservesInvariants for 5
+
 check NoPrivacyViolation for 7

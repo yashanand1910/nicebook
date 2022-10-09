@@ -41,12 +41,12 @@ pred constraintUserOwnsAtleastOneContent {
 
 -- Same user cannot be tagged twice in a photo
 pred constraintCannotTagSameUserInOnePhoto {
-	all t1, t2: Tag | (tags.t1 = tags.t2) implies isTagged.t1 != isTagged.t2
+	all t1, t2: Tag | ((t1 != t2) and (tags.t1 = tags.t2)) implies isTagged.t1 != isTagged.t2
 }
 
 -- If there is a tag, it must be correlated with exactly one photo and that tag must contain exactly one user
 pred constraintTagIsAssociatedWithExactlyOnePhotoAndOnePairOfUsers {
-	all t : Tag | one tags.t and one isTagged.t and  one hasTagged.t
+	all t : Tag | one tags.t and one isTagged.t and one hasTagged.t
 }
 
 -- Comments should not have cycles
