@@ -85,13 +85,13 @@ pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 
  	// Post
 	some com_owner_new : User | one com_owner_old : (owns.com & s1.users) | {
-		// Remove ownership of com
+		-- Remove ownership of com
 		com_owner_new.owns = com_owner_old.owns - com
 
-		// Frame
+		-- Frame
 		ModifyContentFrame[com_owner_old, com_owner_new]
 
-		// Replace user
+		-- Replace user
 		ReplaceUser[s1, com_owner_old, s2, com_owner_new]
 	}
 }

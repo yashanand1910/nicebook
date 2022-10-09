@@ -51,6 +51,9 @@ pred canUserRemoveComment[u : User, com : Comment, s : Nicebook] {
 }
 
 pred checkRemoveCommentPrivilege[u : User, com : Comment] {
+	-- Can remove commented if:
+	---- Comment is owned by user OR
+	---- Comment is commented on user owned content
 	u in (com + com.^commentedOn)[owns]
 }
 
@@ -64,7 +67,9 @@ pred canUserAddTag[tagger, taggee: User, p : Photo, s : Nicebook] {
 }
 
 pred checkAddTagPrivileges[tagger, taggee : User, p : Photo, s : Nicebook] {
+	-- Both tagger/taggee should be able to view the photo
 	p in canView[tagger, s] and p in canView[taggee, s]
+	-- Tagger/Tagee should be the same user or should be friends
 	tagger = taggee or tagger in taggee.friends
 }
 
@@ -78,9 +83,12 @@ pred canUserRemoveTag[tag_remover, remove_user_tag: User, p : Photo, s : Niceboo
 }
 
 pred checkRemoveTagPrivileges[tag_remover, remove_user_tag : User, p: Photo] {
-	tag_remover in (p[owns] + p.tags[isTagged] + p.tags[hasTagged])
+	tag_remover in p[owns] + p.tags[isTagged] + p.tags[hasTagged]
 }
 
+/**
+ * Frame conditions utilised to replicate users in Content related actions
+ */
 pred ModifyContentFrame[u1, u2 : User] {
 	u2.commentPrivacy = u1.commentPrivacy
 	u2.userViewPrivacy = u1.userViewPrivacy
@@ -89,6 +97,9 @@ pred ModifyContentFrame[u1, u2 : User] {
 	u2.hasTagged = u1.hasTagged
 }
 
+/**
+ * Frame conditions utilised to replicate users in Tag related Actions
+ */
 pred ModifyTagFrame[u1, u2 : User] {
 	u2.commentPrivacy = u1.commentPrivacy
 	u2.userViewPrivacy = u1.userViewPrivacy
@@ -97,6 +108,9 @@ pred ModifyTagFrame[u1, u2 : User] {
 	u2.hasTagged = u1.hasTagged
 }
 
+/**
+ * Copies all users in state s2 except u1 which is replaced with u2
+ */
 pred ReplaceUser[s1: Nicebook, u1 : User, s2 : Nicebook, u2 : User] {
 	s2.users = s1.users - u1 + u2
 }

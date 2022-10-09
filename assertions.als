@@ -13,6 +13,10 @@ open functions as F
  * - Inductive Steps for each action
  */
 
+/**
+ * Asserts that if a user can view some content in state,
+ * It has the right privilege for it
+ */
 assert NoPrivacyViolation {
 	all s : Nicebook, u : s.users, c : getContentsInState[s] | 
 	let content_owner = getContentOwnerInState[c, s] |
@@ -20,7 +24,7 @@ assert NoPrivacyViolation {
 		some (getUserOwnedContentsInState[u, s] & c.^commentedOn) or
 		{
 			c.contentViewPrivacy = PL_OnlyMe implies {
-			u = content_owner
+				u = content_owner
 			}
 			c.contentViewPrivacy = PL_Friends implies {
 				u in (u + getFriendsInState[content_owner, s])
@@ -38,6 +42,11 @@ assert NoPrivacyViolation {
 		}
 	}
 }
+
+
+/*********************************************************************
+ * ASSERTIONS TO ENSURE THAT ACTIONS PRESERVE INVARIANTS
+ *********************************************************************/
 
 assert addPhotoPreservesInvariants {
 	all s1, s2 : Nicebook, p : Photo, u: User |
