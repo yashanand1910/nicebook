@@ -3,6 +3,8 @@
  ****************/
 
 open signatures as S
+open functions
+open predicates
 
 /**
  * TODO: 
@@ -13,27 +15,20 @@ open signatures as S
 
 -- addPhoto: Upload a photo to be published on a user’s account.
 // TODO: Saloni
-pred addPhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
+pred addPhoto [s1, s2: Nicebook, p : Photo, photo_adder_old : User] {
 	// Pre
-	u1 in s1.users
-	p not in s1.users.owns
-	no p.tags
-	no commentedOn.p
+	canUserAddPhoto[photo_adder_old, p, s1]
 
 	// Post
-	some u2 : User {
-		-- Add photo
-		u2.owns = u1.owns + p
+	some photo_adder_new : User {
+		// Action: Add photo
+		photo_adder_new.owns = photo_adder_old.owns + p
 
 		// Frame
-		u2.commentPrivacy = u1.commentPrivacy
-		u2.userViewPrivacy = u1.userViewPrivacy
-		u2.friends = u1.friends
-		u2.isTagged = u1.isTagged
-		u2.hasTagged = u1.hasTagged
+		ModifyContentFrame[photo_adder_old, photo_adder_new]
 		
 		// Replace user
-		s2.users = s1.users - u1 + u2
+		ReplaceUser[s1, photo_adder_old, s2, photo_adder_new]
 	}
 }
 
@@ -62,14 +57,43 @@ pred removePhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
     }
 }
 
--- addComment: Add a comment to a photo or another comment.
-pred addComment [s1, s2: Nicebook, c : Content, com: Comment, u : User] {
-	// TODO: Hissah
+-- addComment: Add a comment to a Content
+// TODO: Saloni
+pred addComment [s1, s2: Nicebook, com : Comment, C : Content, commenter_old : User] {
+	// Pre
+	canUserAddComment[commenter_old, com, C, s1]
+
+	// Post
+	some commenter_new : User {
+		-- Action: commenter_new is owner of com, add com to C
+		commenter_new.owns = commenter_old.owns + com
+		C in com.commentedOn
+		
+		-- Frame
+		ModifyContentFrame[commenter_old, commenter_new]
+		
+		-- Replace user
+		ReplaceUser[s1, commenter_old, s2, commenter_new]
+	}
 }
 
 -- removeComment: Remove an existing comment.
-pred removeComment [s1, s2: Nicebook, com : Comment, u : User] {
-	// TODO: Anyone
+// TODO: Saloni
+pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
+	// Pre
+	canUserRemoveComment[com_remover, com, s1]
+
+ 	// Post
+	some com_owner_new : User | one com_owner_old : (owns.com & s1.users) | {
+		// Remove ownership of com
+		com_owner_new.owns = com_owner_old.owns - com
+
+		// Frame
+		ModifyContentFrame[com_owner_old, com_owner_new]
+
+		// Replace user
+		ReplaceUser[s1, com_owner_old, s2, com_owner_new]
+	}
 }
 
 -- addTag: Add a tag to an existing photo on a user’s account.

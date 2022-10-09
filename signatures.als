@@ -32,6 +32,7 @@ sig User {
 	owns : some Content
 }
 
+
 abstract sig Content {
 	contentViewPrivacy : one PrivacyLevel,
 }
