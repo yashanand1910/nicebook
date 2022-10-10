@@ -38,7 +38,7 @@ pred invariantContentCanHaveOneOwnerInOneState[s : Nicebook] {
 
 -- Users can only be tagged by their friends
 pred invariantUsersCanBeTaggedBySelfAndFriendsOnly[s : Nicebook] {
-	all t : getTagsInState[s] | hasTagged.t = isTagged.t or hasTagged.t in isTagged.t.friends
+	all t : getTagsInState[s] | hasTagged.t in isTagged.t.friends
 }
 
 -- A Comment should not be present unless it has the required privileges
