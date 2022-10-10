@@ -13,48 +13,48 @@ pred canUserAddPhoto[photo_adder : User, p: Photo, s : Nicebook] {
 	-- No privilege required, anybody can add Photo
 }
 
-pred canUserRemovePhoto[u : User, p: Photo, s : Nicebook] {
+pred canUserRemovePhoto[photo_remover : User, p: Photo, s : Nicebook] {
 	-- Sanity Check
-	u in s.users
+	photo_remover in s.users
 	p in getContentsInState[s]
 
 	-- Remove Photo privilege
-	checkRemovePhotoPrivilege[u, p]
+	checkRemovePhotoPrivilege[photo_remover, p]
 }
 
-pred checkRemovePhotoPrivilege [u : User, p : Photo] {
-	p in u.owns
+pred checkRemovePhotoPrivilege[photo_remover : User, p : Photo] {
+	p in photo_remover.owns
 }
 
-pred canUserAddComment[u: User, com : Comment, c : Content, s : Nicebook] {
+pred canUserAddComment[comment_adder: User, com : Comment, c : Content, s : Nicebook] {
 	-- Sanity Check
-	u in s.users
+	comment_adder in s.users
 	com not in s.users.owns
 	c in getContentsInState[s]
 	no commentedOn.com
 
 	-- Add Comment Privilege
-	checkAddCommentPrivilege [u, c, s]
+	checkAddCommentPrivilege [comment_adder, c, s]
 }
 
-pred checkAddCommentPrivilege [u : User, c : Content, s : Nicebook] {
-	c in canCommentOn[u, s]
+pred checkAddCommentPrivilege [comment_adder : User, c : Content, s : Nicebook] {
+	c in canCommentOn[comment_adder, s]
 }
 
-pred canUserRemoveComment[u : User, com : Comment, s : Nicebook] {
+pred canUserRemoveComment[comment_remover : User, com : Comment, s : Nicebook] {
 	-- Sanity Check
-	u in s.users
+	comment_remover in s.users
 	com in getContentsInState[s]
 
 	-- Remove Comment privilege
-	checkRemoveCommentPrivilege[u, com]
+	checkRemoveCommentPrivilege[comment_remover, com]
 }
 
-pred checkRemoveCommentPrivilege[u : User, com : Comment] {
+pred checkRemoveCommentPrivilege[comment_remover : User, com : Comment] {
 	-- Can remove commented if:
 	---- Comment is owned by user OR
 	---- Comment is commented on user owned content
-	u in (com + com.^commentedOn)[owns]
+	comment_remover in (com + com.^commentedOn)[owns]
 }
 
 pred canUserAddTag[tagger, taggee: User, p : Photo, s : Nicebook] {
@@ -73,17 +73,18 @@ pred checkAddTagPrivileges[tagger, taggee : User, p : Photo, s : Nicebook] {
 	tagger in taggee.friends
 }
 
-pred canUserRemoveTag[tag_remover, remove_user_tag: User, p : Photo, s : Nicebook] {
+pred canUserRemoveTag[tag_remover, taggee: User, p : Photo, s : Nicebook] {
 	-- Sanity Check
-	(tag_remover + remove_user_tag) in s.users
-	remove_user_tag in p.tags[isTagged]
+	(tag_remover + taggee) in s.users
+	taggee in p.tags[isTagged]
+    p in getContentsInState[s]
 
 	-- Privileges
-	checkRemoveTagPrivileges[tag_remover, remove_user_tag, p]
+	checkRemoveTagPrivileges[tag_remover, taggee, p]
 }
 
-pred checkRemoveTagPrivileges[tag_remover, remove_user_tag : User, p: Photo] {
-	tag_remover in p[owns] + p.tags[isTagged] + p.tags[hasTagged]
+pred checkRemoveTagPrivileges[tag_remover, taggee : User, p: Photo] {
+	tag_remover in (p[owns] + taggee + taggee.isTagged[hasTagged])
 }
 
 pred PrivacyFrame[u_old, u_new: User] {

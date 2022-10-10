@@ -10,7 +10,6 @@ open signatures as S
  * - User should be able to view parent Comments/Photo
  * - User should have the privilege to view comments of parent Comments/Photo
  */
-
 fun canView[u : User, s: Nicebook] : set Content {
 	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u], 
 		r3 = rawCanViewContentComments[u] | r1 & {

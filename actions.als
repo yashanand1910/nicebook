@@ -2,7 +2,7 @@
  * ACTIONS
  ****************/
 
-open signatures as S
+open signatures
 open functions
 open predicates
 
@@ -14,7 +14,6 @@ open predicates
  */
 
 -- addPhoto: Upload a photo to be published on a user’s account.
-// TODO: Saloni
 pred addPhoto [s1, s2: Nicebook, p : Photo, photo_adder_old : User] {
 	// Pre
 	canUserAddPhoto[photo_adder_old, p, s1]
@@ -33,32 +32,26 @@ pred addPhoto [s1, s2: Nicebook, p : Photo, photo_adder_old : User] {
 }
 
 -- removePhoto: Remove an existing photo from a user’s account
-pred removePhoto [s1, s2: Nicebook, p : Photo, u1 : User] {
-    // pre-condition:
-    p in s1.users.owns              // Photo must exist in s1
-    u1 in p[owns]                   // Only owner can delete his photo
+pred removePhoto [s1, s2: Nicebook, p : Photo, photo_remover_old : User] {
+    // Pre
+    canUserRemovePhoto[photo_remover_old, p, s1]
     
-    // post-condition:
-    some u2 : s2.users {
-        u2.owns = u1.owns - p       // Photo should no longer be owned by user
+    // Post
+    some photo_remover_new : User {
+        // Action: Remove photo
+        photo_remover_new.owns = photo_remover_old.owns - p       
 
-        -- Note: This doesn't delink comments on this photo
-        -- The comments visibility will be taken care by privacy fucntions
+        -- Note: This much is sufficient as it won't appear in getContentsInState anymore
         
-        // frame condition
-        u2.commentPrivacy = u1.commentPrivacy
-        u2.userViewPrivacy = u1.userViewPrivacy
-        u2.friends = u1.friends
-        u2.isTagged = u1.isTagged
-        u2.hasTagged = u1.hasTagged
+        // Frame 
+        ModifyContentFrame[photo_remover_old, photo_remover_new]
 
-        // promote
-        s2.users = s1.users - u1 + u2
+        // Replace user
+        ReplaceUser[s1, photo_remover_old, s2, photo_remover_new]
     }
 }
 
 -- addComment: Add a comment to a Content
-// TODO: Saloni
 pred addComment [s1, s2: Nicebook, com : Comment, C : Content, commenter_old : User] {
 	// Pre
 	canUserAddComment[commenter_old, com, C, s1]
@@ -78,7 +71,6 @@ pred addComment [s1, s2: Nicebook, com : Comment, C : Content, commenter_old : U
 }
 
 -- removeComment: Remove an existing comment.
-// TODO: Saloni
 pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 	// Pre
 	canUserRemoveComment[com_remover, com, s1]
@@ -97,50 +89,42 @@ pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 }
 
 -- addTag: Add a tag to an existing photo on a user’s account.
-pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
+pred addTag [s1, s2: Nicebook, p: Photo, taggee_old, tagger_old : User] {
 	// precondition
-	canUserAddTag[tagger, taggee, p, s1]
+	canUserAddTag[tagger_old, taggee_old, p, s1]
 
 	// postcondition
 	some t: Tag, tagger_new, taggee_new: User {
-		t not in (taggee.isTagged + tagger.hasTagged)
+		t not in (taggee_old.isTagged + tagger_old.hasTagged)
 		t in p.tags
 
-		taggee_new.isTagged = taggee.isTagged + t
-		tagger_new.hasTagged = tagger.hasTagged + t
+		taggee_new.isTagged = taggee_old.isTagged + t
+		tagger_new.hasTagged = tagger_old.hasTagged + t
 
 		// frame condition
-		ModifyTagFrame[taggee, taggee_new, tagger, tagger_new]
+		ModifyTagFrame[taggee_old, taggee_new, tagger_old, tagger_new]
 
 		// promote the taggee
-		ReplaceUser[s1, taggee + tagger, s2, taggee_new + tagger_new]
+		ReplaceUser[s1, taggee_old + tagger_old, s2, taggee_new + tagger_new]
 	}
 }
 
 -- removeTag: Remove a tag from a photo
-pred removeTag [s1, s2: Nicebook, t : Tag, u1 : User] {
-    // pre-condition:
-    t in s1.users.owns.tags                         // Tag must exist in s1
-    u1 in t[tags][owns] or u1 in t[hasTagged]       // ASSUMPTION: Only tag/photo owner can delete
+pred removeTag [s1, s2: Nicebook, p : Photo, taggee_old, tag_remover : User] {
+    // Pre
+    canUserRemoveTag[tag_remover, taggee_old, p, s1]
 
-    // post-condition:
-    some u2 : User {
-        some p2 : Photo {
-            // local update
-            p2.tags = t[tags].tags - t
+    // Post
+    some taggee_new, tagger_new : User | let tag = p.tags & taggee_old.isTagged | let tagger_old = (taggee_old.isTagged & p.tags)[hasTagged] { 
+        taggee_new.isTagged = taggee_old.isTagged - tag
+        tagger_new.hasTagged = tagger_old.hasTagged - tag
+        
+        -- Note: This much is sufficient as it won't appear in getTagsInState anymore
 
-            // promote
-            u2.owns = u1.owns + p2 - t[tags]
-        }
+        // Frame
+        ModifyTagFrame[taggee_old, taggee_new, tagger_old, tagger_new] 
 
-        // frame condition
-        u2.commentPrivacy = u1.commentPrivacy
-        u2.userViewPrivacy = u1.userViewPrivacy
-        u2.friends = u1.friends
-        u2.isTagged = u1.isTagged
-        u2.hasTagged = u1.hasTagged
-
-        // promote
-        s2.users = s1.users + u2 - u1
+        // Replace user
+        ReplaceUser[s1, taggee_old + tagger_old, s2, taggee_new + tagger_new] 
     }
 }

@@ -21,7 +21,7 @@ pred Invariants[s : Nicebook] {
 pred stateInvariants[s : Nicebook] {
 	invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
-	invariantUsersCanBeTaggedBySelfAndFriendsOnly[s]
+	invariantUsersCanBeTaggedByFriendsOnly[s]
 	invaraintNoCommentIsPresentWithoutPrivileges[s]
 	invariantNoTagIsPresentWithoutPrivileges[s]
 }
@@ -37,7 +37,7 @@ pred invariantContentCanHaveOneOwnerInOneState[s : Nicebook] {
 }
 
 -- Users can only be tagged by their friends
-pred invariantUsersCanBeTaggedBySelfAndFriendsOnly[s : Nicebook] {
+pred invariantUsersCanBeTaggedByFriendsOnly[s : Nicebook] {
 	all t : getTagsInState[s] | hasTagged.t in isTagged.t.friends
 }
 
