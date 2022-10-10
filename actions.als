@@ -89,42 +89,42 @@ pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 }
 
 -- addTag: Add a tag to an existing photo on a user’s account.
-pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
+pred addTag [s1, s2: Nicebook, p: Photo, taggee_old, tagger_old : User] {
 	// precondition
-	canUserAddTag[tagger, taggee, p, s1]
+	canUserAddTag[tagger_old, taggee_old, p, s1]
 
 	// postcondition
 	some t: Tag, tagger_new, taggee_new: User {
-		t not in (taggee.isTagged + tagger.hasTagged)
+		t not in (taggee_old.isTagged + tagger_old.hasTagged)
 		t in p.tags
 
-		taggee_new.isTagged = taggee.isTagged + t
-		tagger_new.hasTagged = tagger.hasTagged + t
+		taggee_new.isTagged = taggee_old.isTagged + t
+		tagger_new.hasTagged = tagger_old.hasTagged + t
 
 		// frame condition
-		ModifyTagFrame[taggee, taggee_new, tagger, tagger_new]
+		ModifyTagFrame[taggee_old, taggee_new, tagger_old, tagger_new]
 
 		// promote the taggee
-		ReplaceUser[s1, taggee + tagger, s2, taggee_new + tagger_new]
+		ReplaceUser[s1, taggee_old + tagger_old, s2, taggee_new + tagger_new]
 	}
 }
 
 -- removeTag: Remove a tag from a photo
-pred removeTag [s1, s2: Nicebook, p : Photo, taggee, tag_remover : User] {
+pred removeTag [s1, s2: Nicebook, p : Photo, taggee_old, tag_remover : User] {
     // Pre
-    canUserRemoveTag[tag_remover, taggee, p, s1]
+    canUserRemoveTag[tag_remover, taggee_old, p, s1]
 
     // Post
-    some taggee_new, tagger_new : User | let tag = p.tags & taggee.isTagged | let tagger = (taggee.isTagged & p.tags)[hasTagged] { 
-        taggee_new.isTagged = taggee.isTagged - tag
-        tagger_new.hasTagged = tagger.hasTagged - tag
+    some taggee_new, tagger_new : User | let tag = p.tags & taggee_old.isTagged | let tagger_old = (taggee_old.isTagged & p.tags)[hasTagged] { 
+        taggee_new.isTagged = taggee_old.isTagged - tag
+        tagger_new.hasTagged = tagger_old.hasTagged - tag
         
         -- Note: This much is sufficient as it won't appear in getTagsInState anymore
 
         // Frame
-        ModifyTagFrame[taggee, taggee_new, tagger, tagger_new] 
+        ModifyTagFrame[taggee_old, taggee_new, tagger_old, tagger_new] 
 
         // Replace user
-        ReplaceUser[s1, taggee + tagger, s2, taggee_new + tagger_new] 
+        ReplaceUser[s1, taggee_old + tagger_old, s2, taggee_new + tagger_new] 
     }
 }
