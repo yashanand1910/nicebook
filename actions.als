@@ -89,8 +89,24 @@ pred removeComment [s1, s2: Nicebook, com : Comment, com_remover : User] {
 }
 
 -- addTag: Add a tag to an existing photo on a user’s account.
-pred addTag [s1, s2: Nicebook, p: Photo, t : Tag, u : User] {
-	// TODO: Kaz
+pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
+	// precondition
+	canUserAddTag[tagger, taggee, p, s1]
+
+	// postcondition
+	some t: Tag, tagger_new, taggee_new: User {
+		t not in (taggee.isTagged + tagger.hasTagged)
+		t in p.tags
+
+		taggee_new.isTagged = taggee.isTagged + t
+		tagger_new.hasTagged = tagger.hasTagged + t
+
+		// frame condition
+		ModifyTagFrame[taggee, taggee_new, tagger, tagger_new]
+
+		// promote the taggee
+		ReplaceUser[s1, taggee + tagger, s2, taggee_new + tagger_new]
+	}
 }
 
 -- removeTag: Remove a tag from a photo

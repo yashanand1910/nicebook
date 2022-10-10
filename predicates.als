@@ -86,31 +86,50 @@ pred checkRemoveTagPrivileges[tag_remover, taggee : User, p: Photo] {
 	tag_remover in (p[owns] + taggee + taggee.isTagged[hasTagged])
 }
 
+pred PrivacyFrame[u_old, u_new: User] {
+	u_new.commentPrivacy = u_old.commentPrivacy
+	u_new.userViewPrivacy = u_old.userViewPrivacy
+}
+
+
 /**
  * Frame conditions utilised to replicate users in Content related actions
  */
-pred ModifyContentFrame[u1, u2 : User] {
-	u2.commentPrivacy = u1.commentPrivacy
-	u2.userViewPrivacy = u1.userViewPrivacy
-	u2.friends = u1.friends
-	u2.isTagged = u1.isTagged
-	u2.hasTagged = u1.hasTagged
+pred ModifyContentFrame[u_old, u_new : User] {
+	PrivacyFrame[u_old, u_new]
+
+	u_new.friends = u_old.friends
+	u_new.isTagged = u_old.isTagged
+	u_new.hasTagged = u_old.hasTagged
 }
 
 /**
- * Frame conditions utilised to replicate users in Tag related Actions
+ * Frame conditions utilised to replicate Tagger and Taggee user in Tag related Actions
  */
-pred ModifyTagFrame[u1, u2 : User] {
-	u2.commentPrivacy = u1.commentPrivacy
-	u2.userViewPrivacy = u1.userViewPrivacy
-	u2.friends = u1.friends
-	u2.owns = u1.owns
-	u2.hasTagged = u1.hasTagged
+
+pred ModifyTagFrame[taggee, taggee_new, tagger, tagger_new : User] {
+	PrivacyFrame[taggee, taggee_new]
+	PrivacyFrame[tagger, tagger_new]
+	
+	taggee != tagger implies {
+		tagger_new.friends = tagger.friends - taggee + taggee_new
+		taggee_new.friends = taggee.friends - tagger + tagger_new
+		taggee_new.hasTagged = taggee.hasTagged
+		tagger_new.isTagged = tagger.isTagged
+	}
+
+	tagger = taggee implies {
+		tagger_new = taggee_new
+		taggee_new.friends = taggee.friends
+	}
+
+	taggee_new.owns = taggee.owns
+	tagger_new.owns = tagger.owns
 }
 
 /**
- * Copies all users in state s2 except u1 which is replaced with u2
+ * Copies all users in state s2 except users_old which are replaced by users_new
  */
-pred ReplaceUser[s1: Nicebook, u1 : User, s2 : Nicebook, u2 : User] {
-	s2.users = s1.users - u1 + u2
+pred ReplaceUser[s1: Nicebook, users_old : User, s2 : Nicebook, users_new : User] {
+	s2.users = s1.users - users_old + users_new
 }

@@ -21,12 +21,12 @@ pred Invariants[s : Nicebook] {
 pred stateInvariants[s : Nicebook] {
 	invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s]
 	invariantContentCanHaveOneOwnerInOneState[s]
-	invariantUsersCanBeTaggedByFriendsOnly[s]
+	invariantUsersCanBeTaggedBySelfAndFriendsOnly[s]
 	invaraintNoCommentIsPresentWithoutPrivileges[s]
 	invariantNoTagIsPresentWithoutPrivileges[s]
 }
 
--- A user cannot be friends with a user who is not in the same stae
+-- Ensure user's friends are in the same state
 pred invariantUserCanOnlyBeFriendsWithUsersInTheSameState[s: Nicebook] {
 	s.users.friends in s.users
 }
@@ -37,8 +37,8 @@ pred invariantContentCanHaveOneOwnerInOneState[s : Nicebook] {
 }
 
 -- Users can only be tagged by their friends
-pred invariantUsersCanBeTaggedByFriendsOnly[s : Nicebook] {
-	all t : getTagsInState[s] | hasTagged.t in isTagged.t.friends
+pred invariantUsersCanBeTaggedBySelfAndFriendsOnly[s : Nicebook] {
+	all t : getTagsInState[s] | hasTagged.t = isTagged.t or hasTagged.t in isTagged.t.friends
 }
 
 -- A Comment should not be present unless it has the required privileges
