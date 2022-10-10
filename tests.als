@@ -22,17 +22,14 @@ run GenerateAddPhotoValidInstance {
 
 check addPhotoPreservesInvariants for 5
 
----
-
 -- removePhoto Tests
 run GenerateRemovePhotoValidInstance {
+    #Nicebook = 2
     some s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users |
         s1 != s2 and (Invariants[s1] and removePhoto[s1, s2, p, u] and Invariants[s2])
 } for 5 but 2 Nicebook, exactly 3 User, 3 Comment
 
 check removePhotoPreservesInvariants for 5
-
----
 
 -- addComment Tests
 run GenerateAddCommentValidInstance {
@@ -43,8 +40,6 @@ run GenerateAddCommentValidInstance {
 
 check addCommentPreservesInvariants for 5
 
----
-
 -- removeComment Tests
 run GenerateRemoveCommentValidInstance {
 	#Nicebook = 2
@@ -54,6 +49,7 @@ run GenerateRemoveCommentValidInstance {
 
 check removeCommentPreservesInvariants for 5
 
+-- addTag Tests
 run GenerateAddTagValidInstance {
 	#Nicebook = 2
 	some s1, s2: Nicebook, p: Photo, taggee: User, tagger: User | some s1.users and
@@ -61,5 +57,14 @@ run GenerateAddTagValidInstance {
 } for 5
 
 check addTagPreservesInvariants for 5
+
+-- removeTag Tests
+run GenerateRemoveTagValidInstance {
+    #Nicebook = 2
+    some s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users, taggee : p.tags[isTagged] |
+        s1 != s2 and (Invariants[s1] and removeTag[s1, s2, p, taggee, u] and Invariants[s2])
+}
+
+check removeTagPreservesInvariants for 5
 
 check NoPrivacyViolation for 7

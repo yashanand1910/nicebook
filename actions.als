@@ -110,21 +110,21 @@ pred addTag [s1, s2: Nicebook, p: Photo, taggee, tagger : User] {
 }
 
 -- removeTag: Remove a tag from a photo
-pred removeTag [s1, s2: Nicebook, p : Photo, taggee_old, tag_remover : User] {
+pred removeTag [s1, s2: Nicebook, p : Photo, taggee, tag_remover : User] {
     // Pre
-    canUserRemoveTag[tag_remover, taggee_old, p, s1]
+    canUserRemoveTag[tag_remover, taggee, p, s1]
 
     // Post
-    some taggee_new : User {
-        // Action: Remove tag from user 
-        taggee_new.isTagged = taggee_old.isTagged - (p.tags & taggee_old.isTagged) 
+    some taggee_new, tagger_new : User | let tag = p.tags & taggee.isTagged | let tagger = (taggee.isTagged & p.tags)[hasTagged] { 
+        taggee_new.isTagged = taggee.isTagged - tag
+        tagger_new.hasTagged = tagger.hasTagged - tag
         
         -- Note: This much is sufficient as it won't appear in getTagsInState anymore
 
         // Frame
-        ModifyTagFrame[taggee_old, taggee_new]
+        ModifyTagFrame[taggee, taggee_new, tagger, tagger_new] 
 
         // Replace user
-        ReplaceUser[s1, taggee_old, s2, taggee_new]
+        ReplaceUser[s1, taggee + tagger, s2, taggee_new + tagger_new] 
     }
 }
