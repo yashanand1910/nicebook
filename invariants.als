@@ -1,5 +1,6 @@
 /******************
  * INVARIANTS
+ * @author: Team 16
  ******************/
 
 open signatures

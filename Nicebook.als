@@ -1,5 +1,6 @@
 /****************
  * MAIN MODEL
+ * @author: Team 16
  ****************/
 
 open signatures as S

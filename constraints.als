@@ -1,5 +1,6 @@
 /*************************
- * OBJECT CONSTRAINTS 
+ * OBJECT CONSTRAINTS
+ * @author: Team 16
  *************************/
 
 open signatures as s
