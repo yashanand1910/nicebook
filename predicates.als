@@ -61,6 +61,7 @@ pred canUserAddTag[tagger, taggee: User, p : Photo, s : Nicebook] {
 	-- Sanity Check
 	(tagger + taggee) in s.users
 	taggee not in p.tags[isTagged]
+    p in getContentsInState[s]
 
 	-- Privileges
 	checkAddTagPrivileges[tagger, taggee, p, s]
@@ -77,6 +78,7 @@ pred canUserRemoveTag[tag_remover, taggee: User, p : Photo, s : Nicebook] {
 	-- Sanity Check
 	(tag_remover + taggee) in s.users
 	taggee in p.tags[isTagged]
+    p in getContentsInState[s]
 
 	-- Privileges
 	checkRemoveTagPrivileges[tag_remover, taggee, p]

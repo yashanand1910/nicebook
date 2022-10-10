@@ -63,7 +63,7 @@ run GenerateRemoveTagValidInstance {
     #Nicebook = 2
     some s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users, taggee : p.tags[isTagged] |
         s1 != s2 and (Invariants[s1] and removeTag[s1, s2, p, taggee, u] and Invariants[s2])
-}
+} for 5
 
 check removeTagPreservesInvariants for 5
 
