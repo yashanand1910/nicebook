@@ -69,8 +69,8 @@ pred canUserAddTag[tagger, taggee: User, p : Photo, s : Nicebook] {
 pred checkAddTagPrivileges[tagger, taggee : User, p : Photo, s : Nicebook] {
 	-- Both tagger/taggee should be able to view the photo
 	p in canView[tagger, s] and p in canView[taggee, s]
-	-- Tagger/Tagee should be the same user or should be friends
-	tagger = taggee or tagger in taggee.friends
+	-- Tagger/Tagee should be friends
+	tagger in taggee.friends
 }
 
 pred canUserRemoveTag[tag_remover, remove_user_tag: User, p : Photo, s : Nicebook] {
@@ -91,7 +91,6 @@ pred PrivacyFrame[u_old, u_new: User] {
 	u_new.userViewPrivacy = u_old.userViewPrivacy
 }
 
-
 /**
  * Frame conditions utilised to replicate users in Content related actions
  */
@@ -106,23 +105,15 @@ pred ModifyContentFrame[u_old, u_new : User] {
 /**
  * Frame conditions utilised to replicate Tagger and Taggee user in Tag related Actions
  */
-
 pred ModifyTagFrame[taggee, taggee_new, tagger, tagger_new : User] {
 	PrivacyFrame[taggee, taggee_new]
 	PrivacyFrame[tagger, tagger_new]
+
+	tagger_new.friends = tagger.friends - taggee + taggee_new
+	taggee_new.friends = taggee.friends - tagger + tagger_new
+	taggee_new.hasTagged = taggee.hasTagged
+	tagger_new.isTagged = tagger.isTagged
 	
-	taggee != tagger implies {
-		tagger_new.friends = tagger.friends - taggee + taggee_new
-		taggee_new.friends = taggee.friends - tagger + tagger_new
-		taggee_new.hasTagged = taggee.hasTagged
-		tagger_new.isTagged = tagger.isTagged
-	}
-
-	tagger = taggee implies {
-		tagger_new = taggee_new
-		taggee_new.friends = taggee.friends
-	}
-
 	taggee_new.owns = taggee.owns
 	tagger_new.owns = tagger.owns
 }
