@@ -54,7 +54,7 @@ assert addPhotoPreservesInvariants {
 }
 
 assert removePhotoPreservesInvariants {
-	all s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users |
+	all s1, s2 : Nicebook, p : Photo, u : User |
 		s1 != s2 and Invariants[s1] and removePhoto[s1, s2, p, u] implies Invariants[s2]
 }
 
@@ -74,6 +74,6 @@ assert addTagPreservesInvariants {
 }
 
 assert removeTagPreservesInvariants {
-    all s1, s2 : Nicebook, p : s1.users.owns & Photo, u : s1.users, taggee : p.tags[isTagged] |
+    all s1, s2 : Nicebook, p : Photo, u, taggee : User | 
         s1 != s2 and Invariants[s1] and removeTag[s1, s2, p, taggee, u] implies Invariants[s2]
 }

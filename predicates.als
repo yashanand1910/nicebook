@@ -61,7 +61,6 @@ pred canUserAddTag[tagger, taggee: User, p : Photo, s : Nicebook] {
 	-- Sanity Check
 	(tagger + taggee) in s.users
 	taggee not in p.tags[isTagged]
-    p in getContentsInState[s]
 
 	-- Privileges
 	checkAddTagPrivileges[tagger, taggee, p, s]
