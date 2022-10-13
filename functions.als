@@ -12,8 +12,8 @@ open signatures as S
  * - User should have the privilege to view comments of parent Comments/Photo
  */
 fun canView[u : User, s: Nicebook] : set Content {
-	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u], 
-		r3 = rawCanViewContentComments[u] | r1 & {
+	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u,s], 
+		r3 = rawCanViewContentComments[u,s] | r1 & {
 			(u.owns + u.owns[^commentedOn]) +
 			{c : r2 | c.^commentedOn in r2 and c.^commentedOn in r3}
 		}
@@ -25,7 +25,7 @@ fun canView[u : User, s: Nicebook] : set Content {
  * - The user must have the privilege to comment on parent Comments/Photo
  */
 fun canCommentOn[u : User, s: Nicebook] : set Content {
-	let r1 = getContentsInState[s & users.u], r2 = rawCanCommentOn[u] | r1 & {
+	let r1 = getContentsInState[s & users.u], r2 = rawCanCommentOn[u,s] | r1 & {
 		(u.owns + u.owns[^commentedOn]) +
 		{c :  r2 | c.^commentedOn in r2}
 	}
@@ -37,11 +37,13 @@ fun canCommentOn[u : User, s: Nicebook] : set Content {
  * - Do not consider nesting
  * - Considers user specific commenting privacy setting
  */
-fun rawCanCommentOn[u : User] : set Content {
-	u.owns +
-	(u.friends & commentPrivacy.PL_Friends).owns +
-	((u.friends + u.friends.friends) & commentPrivacy.PL_FriendsOfFriends).owns +
-	(commentPrivacy.PL_Everyone).owns
+fun rawCanCommentOn[u : User, s : Nicebook] : set Content {
+	let u_friends = getFriendsInState[u,s] | {
+		u.owns +
+		(u_friends & commentPrivacy.PL_Friends).owns +
+		((u_friends + getFriendsInState[u_friends, s]) & commentPrivacy.PL_FriendsOfFriends).owns +
+		(commentPrivacy.PL_Everyone).owns
+	}
 }
 
 /**
@@ -49,11 +51,13 @@ fun rawCanCommentOn[u : User] : set Content {
  * - Do not consider nested Contents priviledges
  * - Considers content level privacy
  */
-fun rawCanViewContent[u : User] : set Content {
-	u.owns +
-	(u.friends.owns & contentViewPrivacy.PL_Friends) +
-	((u.friends.friends.owns + u.friends.owns) & contentViewPrivacy.PL_FriendsOfFriends) +
-	(contentViewPrivacy.PL_Everyone)
+fun rawCanViewContent[u : User, s : Nicebook] : set Content {
+	let u_friends = getFriendsInState[u,s] | {
+		u.owns +
+		(u_friends.owns & contentViewPrivacy.PL_Friends) +
+		((u_friends.owns + getFriendsInState[u_friends, s].owns) & contentViewPrivacy.PL_FriendsOfFriends) +
+		contentViewPrivacy.PL_Everyone
+	}
 }
 
 /**
@@ -61,11 +65,13 @@ fun rawCanViewContent[u : User] : set Content {
  *  - Do not consider nested Contents
  *  - Considers user level privacy
 */
-fun rawCanViewContentComments[u : User] : set Content {
-	u.owns +
-	(u.friends & userViewPrivacy.PL_Friends).owns + 
-	((u.friends + u.friends.friends) & userViewPrivacy.PL_FriendsOfFriends).owns + 
-	(userViewPrivacy.PL_Everyone).owns
+fun rawCanViewContentComments[u : User, s : Nicebook] : set Content {
+	let u_friends = getFriendsInState[u,s] | {
+		u.owns +
+		(u_friends & userViewPrivacy.PL_Friends).owns + 
+		((u_friends + getFriendsInState[u_friends, s]) & userViewPrivacy.PL_FriendsOfFriends).owns + 
+		(userViewPrivacy.PL_Everyone).owns
+	}
 }
 
 /**
@@ -81,12 +87,10 @@ fun getContentsInState[s : Nicebook] : set Content {
 
 /**
  * Return all tags present in a state:
- * - For a Tag to be present in a state, the tagged user must be present in state
+ * - For a Tag to be present in a state, the tagged user and the tagged photo must be present in the state
  */
 fun getTagsInState[s : Nicebook] : set Tag {
-	let allTags = s.users.owns.tags | {
-		t : allTags | (isTagged.t in s.users)
-	}
+	{s.users.isTagged & s.users.owns.tags}
 }
 
 /**
@@ -108,4 +112,18 @@ fun getUserOwnedContentsInState[u : User, s : Nicebook] : set Content {
  */
 fun getFriendsInState[u : User, s : Nicebook] : set User{
 	{u.friends & s.users}
+}
+
+/**
+ * Return the Tag instance that links User u to Photo p
+ */
+fun getUserTag[u : User, p : Photo] : set Tag {
+	{p.tags & u.isTagged}
+}
+
+/**
+ * Return Tagger user who has tagged User u to Photo p
+ */
+fun getTaggerInState[u : User, p : Photo, s : Nicebook] : set User {
+	{getUserTag[u,p][hasTagged] & s.users}
 }

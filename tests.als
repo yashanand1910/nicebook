@@ -17,11 +17,11 @@ open functions as F
 -- addPhoto Tests
 run GenerateAddPhotoValidInstance {
 	#Nicebook = 2
-	some s1, s2: Nicebook, p:Photo, u:User | some s1.users and s1 != s2 and
-		(Invariants[s1] and addPhoto[s1,s2,p,u] and Invariants[s2])
+	some s1,s2: Nicebook, u: User, p:Photo | s1 != s2 and some u.isTagged and
+		Invariants[s1] and addPhoto[s1,s2,p,u] and Invariants[s2]
 } for 5
 
-check addPhotoPreservesInvariants for 5
+check addPhotoPreservesInvariants for 4
 
 -- removePhoto Tests
 run GenerateRemovePhotoValidInstance {
@@ -30,7 +30,7 @@ run GenerateRemovePhotoValidInstance {
         (Invariants[s1] and removePhoto[s1, s2, p, u] and Invariants[s2])
 } for 5 but 2 Nicebook, exactly 3 User, 3 Comment
 
-check removePhotoPreservesInvariants for 5
+check removePhotoPreservesInvariants for 4
 
 -- addComment Tests
 run GenerateAddCommentValidInstance {
@@ -69,4 +69,4 @@ run GenerateRemoveTagValidInstance {
 check removeTagPreservesInvariants for 5
 
 -- Privacy Tests
-check NoPrivacyViolation for 7
+check NoPrivacyViolation for 5
