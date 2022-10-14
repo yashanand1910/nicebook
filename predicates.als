@@ -1,5 +1,6 @@
 /****************
  * PREDICATES
+ * @author: Team 16
  ****************/
 
 open functions
