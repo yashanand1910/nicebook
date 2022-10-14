@@ -57,7 +57,7 @@ assert removeTagPreservesInvariants {
 
 
 /*********************************************************************
- * ASSERTIONS TO ENSURE THAT ACTIONS IS SUCCESSFUL
+ * ASSERTIONS TO ENSURE THAT ACTIONS ARE SUCCESSFUL
  *********************************************************************/
 
 assert addPhotoSuccess {

@@ -42,6 +42,9 @@ fun canCommentOn[u : User, s: Nicebook] : set Content {
  * - Content must be viewable to comment
  * - Do not consider nesting
  * - Considers user specific commenting privacy setting
+ *
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun rawCanCommentOn[u : User, s : Nicebook] : set Content {
 	let u_friends = getFriendsInState[u,s] | {
@@ -56,6 +59,9 @@ fun rawCanCommentOn[u : User, s : Nicebook] : set Content {
  * - Return Content set that user can view considering content level privileges
  * - Do not consider nested Contents priviledges
  * - Considers content level privacy
+ *
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun rawCanViewContent[u : User, s : Nicebook] : set Content {
 	let u_friends = getFriendsInState[u,s] | {
@@ -70,7 +76,10 @@ fun rawCanViewContent[u : User, s : Nicebook] : set Content {
  *  - Return Content set that allows user to view its comments
  *  - Do not consider nested Contents
  *  - Considers user level privacy
-*/
+ *
+ * @u : User instance
+ * @s: Nicebook State
+ */
 fun rawCanViewContentComments[u : User, s : Nicebook] : set Content {
 	let u_friends = getFriendsInState[u,s] | {
 		u.owns +
@@ -84,6 +93,8 @@ fun rawCanViewContentComments[u : User, s : Nicebook] : set Content {
  * Return all content present in a state:
  * - For a Content to be present in a state, all its parent contents must 
  *    have an owner in the current state.
+ *
+ * @s: Nicebook State
  */
 fun getContentsInState[s : Nicebook] : set Content {
 	let allContent = s.users.owns | {
@@ -94,6 +105,8 @@ fun getContentsInState[s : Nicebook] : set Content {
 /**
  * Return all tags present in a state:
  * - For a Tag to be present in a state, the tagged user and the tagged photo must be present in the state
+ * 
+ * @s: Nicebook State
  */
 fun getTagsInState[s : Nicebook] : set Tag {
 	{s.users.isTagged & s.users.owns.tags}
@@ -101,6 +114,9 @@ fun getTagsInState[s : Nicebook] : set Tag {
 
 /**
  * Returns owner of content in a particular state
+ *
+ * @c : Content
+ * @s: Nicebook State
  */
 fun getContentOwnerInState[c : Content, s : Nicebook] : set User {
 	{owns.c & s.users}
@@ -108,6 +124,9 @@ fun getContentOwnerInState[c : Content, s : Nicebook] : set User {
 
 /**
  * Return contents owned by user in a state
+ *
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun getUserOwnedContentsInState[u : User, s : Nicebook] : set Content {
 	{u.owns & getContentsInState[s]}
@@ -115,6 +134,9 @@ fun getUserOwnedContentsInState[u : User, s : Nicebook] : set Content {
 
 /**
  * Return friends of user in a state
+ *
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun getFriendsInState[u : User, s : Nicebook] : set User{
 	{u.friends & s.users}
@@ -122,6 +144,9 @@ fun getFriendsInState[u : User, s : Nicebook] : set User{
 
 /**
  * Return the Tag instance that links User u to Photo p
+ *
+ * @u : User instance
+ * @p : Photo
  */
 fun getUserTag[u : User, p : Photo] : set Tag {
 	{p.tags & u.isTagged}
@@ -129,6 +154,10 @@ fun getUserTag[u : User, p : Photo] : set Tag {
 
 /**
  * Return Tagger user who has tagged User u to Photo p
+ * 
+ * @u : User instance
+ * @p : Photo
+ * @s: Nicebook State
  */
 fun getTaggerInState[u : User, p : Photo, s : Nicebook] : set User {
 	{getUserTag[u,p][hasTagged] & s.users}

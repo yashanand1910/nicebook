@@ -55,6 +55,7 @@ pred canUserRemovePhoto[photo_remover : User, p: Photo, s : Nicebook] {
 
 /**
  * Check if User u has the Privilege to delete a Photo
+ *
  * @photo_remover : User trying to remove the phto
  * @p: The photo to be removed
  */
