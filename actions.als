@@ -158,6 +158,6 @@ pred removeTag [s1, s2: Nicebook, p : Photo, taggee_old, tag_remover : User] {
 		ModifyTagFrame[taggee_old, taggee_new]
 		
 		-- Replace user
-		ReplaceUser[s1, taggee_old, s2, taggee_new] 
+		ReplaceUser[s1, taggee_old, s2, taggee_new]
 	}
 }

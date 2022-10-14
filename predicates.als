@@ -34,7 +34,7 @@ pred canUserAddPhoto[photo_adder : User, p: Photo, s : Nicebook] {
 /**
  * Pre-condition checks for removePhoto
  *
- * @photo_remover : User trying to remove the phto
+ * @photo_remover : User trying to remove the photo
  * @p: The photo to be removed
  * @s : Nicebook state
  */

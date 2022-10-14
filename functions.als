@@ -10,6 +10,9 @@ open signatures
  * - Return Content set that user can view
  * - User should be able to view parent Comments/Photo
  * - User should have the privilege to view comments of parent Comments/Photo
+ *
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun canView[u : User, s: Nicebook] : set Content {
 	let r1 = getContentsInState[s & users.u], r2 = rawCanViewContent[u,s], 
@@ -23,9 +26,12 @@ fun canView[u : User, s: Nicebook] : set Content {
  * For a given state:
  * - Return set of content that user can comment on
  * - The user must have the privilege to comment on parent Comments/Photo
+ * 
+ * @u : User instance
+ * @s: Nicebook State
  */
 fun canCommentOn[u : User, s: Nicebook] : set Content {
-	let r1 = getContentsInState[s & users.u], r2 = rawCanCommentOn[u,s] | r1 & {
+	let r1 = canView[u, s], r2 = rawCanCommentOn[u,s] | r1 & {
 		(u.owns + u.owns[^commentedOn]) +
 		{c :  r2 | c.^commentedOn in r2}
 	}
@@ -42,7 +48,7 @@ fun rawCanCommentOn[u : User, s : Nicebook] : set Content {
 		u.owns +
 		(u_friends & commentPrivacy.PL_Friends).owns +
 		((u_friends + getFriendsInState[u_friends, s]) & commentPrivacy.PL_FriendsOfFriends).owns +
-		(commentPrivacy.PL_Everyone).owns
+		(commentPrivacy.PL_Everyone & s.users).owns
 	}
 }
 
@@ -70,7 +76,7 @@ fun rawCanViewContentComments[u : User, s : Nicebook] : set Content {
 		u.owns +
 		(u_friends & userViewPrivacy.PL_Friends).owns + 
 		((u_friends + getFriendsInState[u_friends, s]) & userViewPrivacy.PL_FriendsOfFriends).owns + 
-		(userViewPrivacy.PL_Everyone).owns
+		(userViewPrivacy.PL_Everyone & s.users).owns
 	}
 }
 
@@ -81,7 +87,7 @@ fun rawCanViewContentComments[u : User, s : Nicebook] : set Content {
  */
 fun getContentsInState[s : Nicebook] : set Content {
 	let allContent = s.users.owns | {
-		c : allContent | owns.(c.^commentedOn) in s.users
+		c : allContent | c.^commentedOn in allContent
 	}
 }
 

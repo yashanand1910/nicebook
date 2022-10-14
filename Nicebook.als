@@ -68,3 +68,8 @@ check removeTagPreservesInvariants for 5
 
 -- Privacy Tests
 check NoPrivacyViolation for 5
+
+check addPhotoSuccess for 5
+check removePhotoSuccess for 5
+check addCommentSuccess for 5
+check removeCommentSuccess for 5
