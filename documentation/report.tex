@@ -100,7 +100,7 @@ There are three types of privacy settings defined in the project specification:
 			            \item The user has tagged another user on a Photo and now wants to remove this tag.
 		            \end{enumerate}
 	      \end{enumerate}
-	      \end {enumerate}
+	      \end{enumerate}
 \end{enumerate}
 
 \subsubsection{Internal Modeling Decisions}
@@ -118,17 +118,60 @@ These are internal alloy-related modeling decisions that do not affect what a us
 \subsection{Define an Alloy function called canView, which takes at least one parameter that represents some user in the
 	social network, and returns the set of all content that can be viewed by that user. You may use any number of
 	helper predicates or functions to define canView.}
+
+See the alloy code we implemented.
+
 \subsection{You will use canView to check whether it is possible for a user to access a piece of content against the intent of the owner. In particular, we say that a privacy violation has occurred if a user is able to view a piece of content without adhering to the privacy level that is assigned to the content by its owner. For example, suppose that Alice
 	and Bob are not friends, and Alice has a photo that is assigned privacy setting Friends; if Bob is able to view the
 	photo, this would be considered a privacy violation. Define an Alloy assertion called NoPrivacyViolation
 	to check that no such violation is possible.}
+
+See the alloy code we implemented.
+
 \subsection{Does your model satisfy NoPrivacyViolation? If so, explain why. If not, include a counterexample that
 	demonstrates a violation, and suggest a modification to the design of privacy settings in Nicebook. Describe
 	any alternatives you considered and rejected, along with justifications for your decision.}
 
+Our model satisfies NoPrivacyViolation. \\
+In the model instance below, if User C is able to view the Comment owned by User B, this is a violation of NoPrivacyViolation Because of the following
+\begin{itemize}
+	\item The Comment's contentViewPrivacy is PL\_Friends and this allows User C to view he/she is friends with the owner of the Comment: User B.
+	\item All parent elements of the Comment are also viewable to User C as the Photo's contentViewPrivacy is set to PL\_Everyone.
+	\item However, User A has userViewPrivacy = PL\_Friends which only allows friends of User A to view comments on contents owned by User A. Since Comment is a comment on a Photo owned by User A, it should not be viewable to User C.
+\end{itemize} 
+
+\includegraphics[width=6in]{images/privacy_violation.png}
+
+
 \section{Task 3}
 \subsection{What are the strengths and weaknesses of Alloy and its tool, the Alloy Analyzer?}
+\subsubsection{Strengths of Alloy}
+\begin{enumerate}
+	\item \textbf{Powerful Relational Logic} \\
+	The most used operator in our project is the relational join. It is similar to the object oriented language but more powerful. For example, in java emp.dept.mng will return the manager of the department which the employee belongs to, while in alloy this will work even if the emp is a set of employees, dept is a set of departments and/or mng is a set of managers. Also, in Alloy we can navigate to the backward relation as well.
+	\item \textbf{Powerful Model Design and Representation} \\
+	Alloy makes it easy to describe a universe of objects as a classification tree, with each relation defined over nodes in this tree. Which makes it easy to visualize the model and relation. Alloy Analyzer can generate a comprehensive graphical representation of the sets and relations from the signature declarations.
+	\item \textbf{Limit Scope Analysis} \\
+	We can have a small scope that bounds each of the types in the specification. A scope of five, for example, would include tests involving at most five elements of each type.
+	\item \textbf{Abstraction} \\
+	An abstract signature has no elements that do not belong to a child signature, and the extensions of a signature are disjoint. 
+\end{enumerate}
+\subsubsection{Weaknesses of Alloy}
+\begin{enumerate}
+	\item \textbf{Ambiguity in the Inconsistency Error} \\
+	When there is an inconsistency error, Alloy does not specify where its section or line of code is, which makes it too hard to figure out the problem, especially when we work in a large system.
+	\item \textbf{There is a Chance to Improve the Presentation of Different States} \\
+	Alloy is representing two different objects for the same signature, the first one presenting the current state and the other representing the post state. This leads to many issues in our project, but we handle this in our project by providing extra constraints and invariants related to states.
+\end{enumerate}
 \subsection{Under what situations would you recommend its use (or not)? Why?}
+Software nowadays is involved in each and every aspect of our life. In communication, healthcare, transportation, airlines, agriculture, network, civil engineering, commerce, … and so on. So when designing a software system, we need to be able to express the structures essential to the design and to check that they have the properties we expect. If we checked the structure model manually, we couldn’t identify each behavior in the system. Using automated modeling tools like alloy is essential especially if the system is critical (and its minor bad state will result in huge impact)
+
+We strongly recommend using alloy as a modeling tool. It is an easy and powerful language and shows its success in many huge projects. Alloy allows every possible behavior for the model, as we add constraints, the behavior is limited.
+
 \subsection{With respect to this notation, what is the single most-important future development that would be needed to
 	make it more generally useful to practitioners?}
+
+	Precise error trace specification for the inconsistency counter example. Refer to the first point in weaknesses of Alloy in the first question in Task 3.
+
+
 \end{document}
