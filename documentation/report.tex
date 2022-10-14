@@ -2,8 +2,6 @@
 \usepackage{fullpage}
 \usepackage{graphicx}
 
-\renewcommand{\thesection}{\Roman{section}}
-
 \begin{document}
 
 \title{17-614 Formal Methods\\[1ex] Project: Structural Modeling}
@@ -51,55 +49,55 @@ There are three types of privacy settings defined in the project specification:
 \end{enumerate}
 \item\textbf{Content Viewing Priveleges}
 \begin{enumerate}
-	\item The getContentsInState[s: Nicebook] function returns the set of Content that belongs to the state s. A Content instance belongs to a state if the owner of the content as well as the owners of all parent contents (if any) belong to the state. In the below example, Comment belongs to S1 in the left state-chart since its user as well as the owner of its parent Content (Photo) belong to the state S1. However, in the right diagram, the owner of Comment belongs to S1, but since the owner of its parent Content does not belong to S2, Comment does not belong to S1 in the right diagram.
+	\item The $getContentsInState[s: Nicebook]$ function returns the set of Content that belongs to the state s. A Content instance belongs to a state if the owner of the content as well as the owners of all parent contents (if any) belong to the state. In the below example, Comment belongs to S1 in the left state-chart since its user as well as the owner of its parent Content (Photo) belong to the state S1. However, in the right diagram, the owner of Comment belongs to S1, but since the owner of its parent Content does not belong to S2, Comment does not belong to S1 in the right diagram.
 
 	      \includegraphics[width=6in]{images/content_view_1.png}
 
-	\item We have defined a function called canView which takes a User instance and a Nicebook instance (representing the state) as arguments and returns the set of Contents that the user can view in a given state. A user can view Content if all of the following conditions hold:
+	\item We have defined a function called $canView$ which takes a User instance and a Nicebook instance (representing the state) as arguments and returns the set of Contents that the user can view in a given state. A user can view Content if all of the following conditions hold:
 
 	      \begin{enumerate}
 		      \item The content belongs to the state
-		      \item The user has viewing privileges for the said content as defined in the contentViewPrivacy relation.
-		      \item If the user has parent elements, the user must have privileges to view the “children” elements of parent elements. This is defined in the userViewPrivacy relation.
+		      \item The user has viewing privileges for the said content as defined in the $contentViewPrivacy$ relation.
+		      \item If the user has parent elements, the user must have privileges to view the “children” elements of parent elements. This is defined in the $userViewPrivacy$ relation.
 		      \item All the above conditions must satisfy for the content at hand as well as all parent elements of the said content – In short, a content can only be viewed if all its parent contents can also be viewed.
 	      \end{enumerate}
 	      \item\textbf{Exception: A user can view all comments and nested comments on content owned by him/her regardless of the contentViewPrivacy and userViewPrivacy settings defined by those comments and owners of those comments respectively.}
 \end{enumerate}
 \item\textbf{Commenting Priveleges}
 \begin{enumerate}
-\item We have defined a function canCommentOn[u: User, s : Nicebook] which returns the set of Contents that the user can comment on. A user can comment on a content if the following conditions hold:
-\begin{enumerate}
-	\item The user can view the content as defined in the canView function.
-	\item The user has commenting privileges as defined by the content owner in the commentPrivacy relation.
+	\item We have defined a function canCommentOn[u: User, s : Nicebook] which returns the set of Contents that the user can comment on. A user can comment on a content if the following conditions hold:
+	      \begin{enumerate}
+		      \item The user can view the content as defined in the canView function.
+		      \item The user has commenting privileges as defined by the content owner in the commentPrivacy relation.
 
-	\item The above conditions must hold true for all its parent content elements, if any.
-\end{enumerate}
-\item\textbf{Exception: A user can comment on comments and nested comments that are attached to contents owned by the user, regardless of the commentPrivacy settings set up by owners of those nested comments.}
-\item\textbf{Operation Priveleges}
-\begin{enumerate}
-	\item \underline{Adding a photo}: Any user can perform this action. When a photo is added by a user, the relationship “owns” is established between the user and the photo.
-	\item \underline{Deleting a photo}: A photo can be deleted by the owner of the photo only.
-	\item \underline{Adding a comment}: To add a comment on an instance of Content, the following conditions must hold true:
-	      \begin{enumerate}
-		      \item The user must have commenting privileges on content as defined in the canCommentOn function.
+		      \item The above conditions must hold true for all its parent content elements, if any.
 	      \end{enumerate}
-	\item \underline{Deleting a comment}: In order to delete a comment, either of the following must hold:
+	      \item\textbf{Exception: A user can comment on comments and nested comments that are attached to contents owned by the user, regardless of the commentPrivacy settings set up by owners of those nested comments.}
+	      \item\textbf{Operation Priveleges}
 	      \begin{enumerate}
-		      \item The user is the owner of the comment
-		      \item The user is the owner of one of the parent elements of the said comment.
-		            \end {enumerate}
-		      \item \underline{Adding a tag}: A user can tag another user on a photo if the following holds true:
+		      \item \underline{Adding a photo}: Any user can perform this action. When a photo is added by a user, the relationship “owns” is established between the user and the photo.
+		      \item \underline{Deleting a photo}: A photo can be deleted by the owner of the photo only.
+		      \item \underline{Adding a comment}: To add a comment on an instance of Content, the following conditions must hold true:
 		            \begin{enumerate}
-			            \item Both users have the privilege of viewing the Photo.
-			            \item The two users are friends in the same state
+			            \item The user must have commenting privileges on content as defined in the canCommentOn function.
 		            \end{enumerate}
-		      \item \underline{Removing a tag}: A user can remove a tag if any one or more of the following conditions holds true:
+		      \item \underline{Deleting a comment}: In order to delete a comment, either of the following must hold:
 		            \begin{enumerate}
-			            \item The user is the owner of the Photo which is tagged.
-			            \item The user is tagged on a Photo and wants to remove his/her own tag from the Photo.
-			            \item The user has tagged another user on a Photo and now wants to remove this tag.
+			            \item The user is the owner of the comment
+			            \item The user is the owner of one of the parent elements of the said comment.
+			                  \end {enumerate}
+			            \item \underline{Adding a tag}: A user can tag another user on a photo if the following holds true:
+			                  \begin{enumerate}
+				                  \item Both users have the privilege of viewing the Photo.
+				                  \item The two users are friends in the same state
+			                  \end{enumerate}
+			            \item \underline{Removing a tag}: A user can remove a tag if any one or more of the following conditions holds true:
+			                  \begin{enumerate}
+				                  \item The user is the owner of the Photo which is tagged.
+				                  \item The user is tagged on a Photo and wants to remove his/her own tag from the Photo.
+				                  \item The user has tagged another user on a Photo and now wants to remove this tag.
+			                  \end{enumerate}
 		            \end{enumerate}
-	      \end{enumerate}
 	      \end{enumerate}
 \end{enumerate}
 
@@ -162,31 +160,31 @@ These are internal alloy-related modeling decisions that do not affect what a us
 \subsection{Describe any invariants that are not explicitly mentioned in the given document but were discovered during the modeling process.}
 Following are the constraints and invariants that weren’t explicitly defined in the project specification but were discovered in the process
 \begin{enumerate}
-	\item A nested comment chain cannot have cycles: A comment cannot be used to comment on itself or one of its “child” comments.
+	\clearpage\item A nested comment chain cannot have cycles: A comment cannot be used to comment on itself or one of its “child” comments.
 
 	      \includegraphics[width=5in]{images/invariant_1.png}
 
-	\item A User cannot be friends with itself, however, loops in friendships are allowed.
+	      \clearpage\item A User cannot be friends with itself, however, loops in friendships are allowed.
 
 	      \includegraphics[width=5in]{images/invariant_2.png}
 
-	\item Users can only be friends with users who share a state with the user.
+	      \clearpage\item Users can only be friends with users who share a state with the user.
 
 	      \includegraphics[width=5in]{images/invariant_3.png}
 
-	\item A user cannot be tagged in the same photo by two different tag instances.
+	      \clearpage\item A user cannot be tagged in the same photo by two different tag instances.
 
 	      \includegraphics[width=5in]{images/invariant_4.png}
 
-	\item Content should have exactly one owner in a state
+	      \clearpage\item Content should have exactly one owner in a state
 
 	      \includegraphics[width=5in]{images/invariant_5.png}
 
-	\item A Tag instance should be mapped to exactly one pair of users in a state.
+	      \clearpage\item A Tag instance should be mapped to exactly one pair of users in a state.
 
 	      \includegraphics[width=5in]{images/invariant_6.png}
 
-	\item While we check for commenting privileges and tagging privileges during operations that connect a pre-state and a post-state, we also must make sure that existing comments and tags satisfy the privileges that are required to add them. Therefore, as part of the invariants, we have defined two invariants: invaraintNoCommentIsPresentWithoutPrivileges and invariantNoTagIsPresentWithoutPrivileges that ensure that comments added are placed there in accordance with the privileges defined in canCommentOn, and the tags are existing on a photo where the the tagger and the tagged user are friends and the photo is viewable to both of them. In the diagram below, User C should not be able to comment on Comment 1 as it doesn’t even have the privilege to view Comment 1. Therefore the following is an invalid state.
+	\item While we check for commenting privileges and tagging privileges during operations that connect a pre-state and a post-state, we also must make sure that existing comments and tags satisfy the privileges that are required to add them. Therefore, as part of the invariants, we have defined two invariants: $invaraintNoCommentIsPresentWithoutPrivileges$ and $invariantNoTagIsPresentWithoutPrivileges$ that ensure that comments added are placed there in accordance with the privileges defined in canCommentOn, and the tags are existing on a photo where the the tagger and the tagged user are friends and the photo is viewable to both of them. In the diagram below, User C should not be able to comment on Comment 1 as it doesn’t even have the privilege to view Comment 1. Therefore the following is an invalid state.
 
 	      \includegraphics[width=6in]{images/invariant_7.png}
 \end{enumerate}
@@ -228,7 +226,7 @@ In the model instance below, if User C is able to view the Comment owned by User
 	\item The Comment's contentViewPrivacy is PL\_Friends and this allows User C to view he/she is friends with the owner of the Comment: User B.
 	\item All parent elements of the Comment are also viewable to User C as the Photo's contentViewPrivacy is set to PL\_Everyone.
 	\item However, User A has userViewPrivacy = PL\_Friends which only allows friends of User A to view comments on contents owned by User A. Since Comment is a comment on a Photo owned by User A, it should not be viewable to User C.
-\end{itemize} 
+\end{itemize}
 
 \includegraphics[width=6in]{images/privacy_violation.png}
 
@@ -238,30 +236,30 @@ In the model instance below, if User C is able to view the Comment owned by User
 \subsubsection{Strengths of Alloy}
 \begin{enumerate}
 	\item \textbf{Powerful Relational Logic} \\
-	The most used operator in our project is the relational join. It is similar to the object oriented language but more powerful. For example, in java emp.dept.mng will return the manager of the department which the employee belongs to, while in alloy this will work even if the emp is a set of employees, dept is a set of departments and/or mng is a set of managers. Also, in Alloy we can navigate to the backward relation as well.
+	      The most used operator in our project is the relational join. It is similar to the object oriented language but more powerful. For example, in java emp.dept.mng will return the manager of the department which the employee belongs to, while in alloy this will work even if the emp is a set of employees, dept is a set of departments and/or mng is a set of managers. Also, in Alloy we can navigate to the backward relation as well.
 	\item \textbf{Powerful Model Design and Representation} \\
-	Alloy makes it easy to describe a universe of objects as a classification tree, with each relation defined over nodes in this tree. Which makes it easy to visualize the model and relation. Alloy Analyzer can generate a comprehensive graphical representation of the sets and relations from the signature declarations.
+	      Alloy makes it easy to describe a universe of objects as a classification tree, with each relation defined over nodes in this tree. Which makes it easy to visualize the model and relation. Alloy Analyzer can generate a comprehensive graphical representation of the sets and relations from the signature declarations.
 	\item \textbf{Limit Scope Analysis} \\
-	We can have a small scope that bounds each of the types in the specification. A scope of five, for example, would include tests involving at most five elements of each type.
+	      We can have a small scope that bounds each of the types in the specification. A scope of five, for example, would include tests involving at most five elements of each type.
 	\item \textbf{Abstraction} \\
-	An abstract signature has no elements that do not belong to a child signature, and the extensions of a signature are disjoint. 
+	      An abstract signature has no elements that do not belong to a child signature, and the extensions of a signature are disjoint.
 \end{enumerate}
 \subsubsection{Weaknesses of Alloy}
 \begin{enumerate}
 	\item \textbf{Ambiguity in the Inconsistency Error} \\
-	When there is an inconsistency error, Alloy does not specify where its section or line of code is, which makes it too hard to figure out the problem, especially when we work in a large system.
+	      When there is an inconsistency error, Alloy does not specify where its section or line of code is, which makes it too hard to figure out the problem, especially when we work in a large system.
 	\item \textbf{There is a Chance to Improve the Presentation of Different States} \\
-	Alloy is representing two different objects for the same signature, the first one presenting the current state and the other representing the post state. This leads to many issues in our project, but we handle this in our project by providing extra constraints and invariants related to states.
+	      Alloy is representing two different objects for the same signature, the first one presenting the current state and the other representing the post state. This leads to many issues in our project, but we handle this in our project by providing extra constraints and invariants related to states.
 \end{enumerate}
 \subsection{Under what situations would you recommend its use (or not)? Why?}
-Software nowadays is involved in each and every aspect of our life. In communication, healthcare, transportation, airlines, agriculture, network, civil engineering, commerce, … and so on. So when designing a software system, we need to be able to express the structures essential to the design and to check that they have the properties we expect. If we checked the structure model manually, we couldn’t identify each behavior in the system. Using automated modeling tools like alloy is essential especially if the system is critical (and its minor bad state will result in huge impact)
+Software nowadays is involved in each and every aspect of our life. In communication, healthcare, transportation, airlines, agriculture, network, civil engineering, commerce, … and so on. So when designing a software system, we need to be able to express the structures essential to the design and to check that they have the properties we expect. If we checked the structure model manually, we couldn’t identify each behavior in the system. Using automated modeling tools like alloy is essential especially if the system is critical (and its minor bad state will result in huge impact)\\
 
 We strongly recommend using alloy as a modeling tool. It is an easy and powerful language and shows its success in many huge projects. Alloy allows every possible behavior for the model, as we add constraints, the behavior is limited.
 
 \subsection{With respect to this notation, what is the single most-important future development that would be needed to
 	make it more generally useful to practitioners?}
 
-	Precise error trace specification for the inconsistency counter example. Refer to the first point in weaknesses of Alloy in the first question in Task 3.
+Precise error trace specification for the inconsistency counter example. Refer to the first point in weaknesses of Alloy in the first question in Task 3.
 
 
 \end{document}
