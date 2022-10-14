@@ -19,7 +19,7 @@ run GenerateAddPhotoValidInstance {
 		Invariants[s1] and addPhoto[s1,s2,p,u] and Invariants[s2]
 } for 5
 
-check addPhotoPreservesInvariants for 4
+check addPhotoPreservesInvariants for 5
 
 -- removePhoto Tests
 run GenerateRemovePhotoValidInstance {
@@ -28,7 +28,7 @@ run GenerateRemovePhotoValidInstance {
         (Invariants[s1] and removePhoto[s1, s2, p, u] and Invariants[s2])
 } for 5 but 2 Nicebook, exactly 3 User, 3 Comment
 
-check removePhotoPreservesInvariants for 4
+check removePhotoPreservesInvariants for 5
 
 -- addComment Tests
 run GenerateAddCommentValidInstance {
