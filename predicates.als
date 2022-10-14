@@ -1,7 +1,7 @@
-/****************
+/********************
  * PREDICATES
  * @author: Team 16
- ****************/
+ *********************/
 
 open functions
 
@@ -15,6 +15,7 @@ open functions
 pred canUserAddPhoto[photo_adder : User, p: Photo, s : Nicebook] {
 	-- Sanity Checks --
 	-----------------
+
 	-- The user must belong to the state
 	photo_adder in s.users
 
@@ -290,11 +291,15 @@ pred ReplaceUser[s1: Nicebook, users_old : User, s2 : Nicebook, users_new : User
  * @s : Nicebook state
  */
 pred NoPrivacyViolationContentLevel[u : User, c : Content, s : Nicebook] {
+	-- Sanity Check--
+	u in s.users
+	c in getContentsInState[s]
+
 	-- c is owned by u or c is commented on user owned content
 	u in (getContentOwnerInState[c + c.^commentedOn, s]) or
 	{	
 		-- Content and all its parent Contents
-		all pc : (c+c.^commentedOn) | let content_owner = getContentOwnerInState[pc, s] {
+		all pc : (c+c.^commentedOn) &s.users.owns | let content_owner = getContentOwnerInState[pc, s] {
 			pc.contentViewPrivacy = PL_OnlyMe implies {
 				u = content_owner
 			}
@@ -325,6 +330,10 @@ pred NoPrivacyViolationContentLevel[u : User, c : Content, s : Nicebook] {
  * @s : Nicebook state
  */
 pred NoPrivacyViolationUserLevel[u : User, c : Content, s : Nicebook] {
+	-- Sanity Check--
+	u in s.users
+	c in getContentsInState[s]
+
 	-- c is owned by u or c is commented on user owned content
 	u in (getContentOwnerInState[c + c.^commentedOn, s]) or
 	{

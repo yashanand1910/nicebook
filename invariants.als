@@ -1,15 +1,13 @@
-/******************
+/********************
  * INVARIANTS
  * @author: Team 16
- ******************/
+ *********************/
 
 open signatures
-open constraints
 open functions
 open predicates
 
 pred Invariants[s : Nicebook] {
-	//objectConstraints
 	stateInvariants[s]
 }
 

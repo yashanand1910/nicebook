@@ -1,14 +1,11 @@
-/******************
+/********************
  * ASSERTIONS
  * @author: Team 16
- ******************/
-
-open signatures as S
-open constraints as C
-open actions as AC
-open invariants as I
-open functions as F
-open predicates as P
+ *********************/
+ 
+open signatures
+open actions
+open invariants
 
 /**
  * Asserts that if a user can view some content in a valid state, this implies that
@@ -16,7 +13,7 @@ open predicates as P
  */
 
 assert NoPrivacyViolation {
-	all s : Nicebook, u : s.users, c : getContentsInState[s] | Invariants[s] implies {
+	all s : Nicebook, u : User, c : Content | Invariants[s] implies {
 		 c in canView[u, s] iff {
 			NoPrivacyViolationContentLevel[u, c, s]
 			NoPrivacyViolationUserLevel[u, c, s]

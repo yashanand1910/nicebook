@@ -1,7 +1,7 @@
-/****************
+/********************
  * ACTIONS
  * @author: Team 16
- ****************/
+ *********************/
 
 open signatures
 open functions
@@ -153,8 +153,6 @@ pred removeTag [s1, s2: Nicebook, p : Photo, taggee_old, tag_remover : User] {
 	some taggee_new: User | {
 		-- Post : Remove the tag
 		taggee_new.isTagged = taggee_old.isTagged - getUserTag[taggee_old, p]
-		
-		-- Note: This much is sufficient as it won't appear in getTagsInState anymore
 		
 		-- Frame
 		ModifyTagFrame[taggee_old, taggee_new]

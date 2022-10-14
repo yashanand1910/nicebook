@@ -1,10 +1,9 @@
-/****************
+/********************
  * MAIN MODEL
  * @author: Team 16
- ****************/
+ *********************/
 
 open signatures as S
-open constraints as C
 open actions as AC
 open invariants as I
 open assertions as A
