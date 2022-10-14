@@ -106,14 +106,104 @@ There are three types of privacy settings defined in the project specification:
 \subsubsection{Internal Modeling Decisions}
 These are internal alloy-related modeling decisions that do not affect what a user sees but how we choose to model our system.
 \begin{enumerate}
-	\item \textbf{Modeling Tags}
+	\item \textbf{Modeling Tags}\\
+	      When it came to modeling tags, we realized that one of the constraints in the spec was to ensure that Users can only tag their friends. We considered three options:
+	      \begin{enumerate}
+		      \item Define three relationships for Tags, one with the tagged User (taggee), one with the tagger User, and one with the Photo.
+		      \item Define a ternary relationship ‘tagging: User $\rightarrow$ User’, and one with the Photo.
+		      \item Simply restrict tagging to friends only in the addTag action.
+	      \end{enumerate}
+	      We found that although option (c) seemed the simplest to implement, we would not be able to constrain our model tightly enough. Alloy would always be able to generate a fresh instance where the constraint is violated because addTag has never happened. Option (b) is a good choice, but we agreed it’s more consistent with the rest of the model if we simply have a separate relation to each User.
+	\item \textbf{Modeling Deletion}\\
+	      When it comes to deleting some Content, we had two options to choose from:
+	      \begin{enumerate}
+		      \item For the owner, create a new User in the new Nicebook state, who no longer owns the Content, and additionally ensure that no other user in the new Nicebook has any link to this Content through Comments or Tags. So that there is no way to reach the Content from the new Nicebook state.
+		      \item For the owner, create a new User in the new Nicebook state, who no longer owns the Content, but retain all other relationships of this deleted Content, and make it impossible for anyone to view it.
+	      \end{enumerate}
+	      The problem with option (a) is that to ensure no Users in the new Nicebook state have a link to the deleted Content, we will have to copy every User to the new state. To truly copy these Users, we need to preserve their Friendships too, which cannot be achieved without redefining our signatures or augmenting our current model with additional relationships that allow us to link an ‘old’ state of a User to its ‘future’ state. In the below example, for deleting photo1 we created two new users user1\_new and user2\_new as they were linked in some way to photo1. Since user1\_old and user2\_old were friends we need to ensure user1\_new and user2\_new are also friends.
+
+	      \includegraphics[width=6in]{images/modeling_decision_1.png}
+
+	      Since a User can have any arbitrary number of friends it becomes very difficult (given our signatures) to write a generic predicate that will ensure all the Friendships are retained. We need a new relation, like ‘future’, to link old User states to new ones, as shown below.
+
+	      \includegraphics[width=6in]{images/modeling_decision_2.png}
+
+	      We chose not to complicate our model by adding extra relations and went for option (b), where we only need to copy the content owner to the new Nicebook state, as shown below.
+
+	      \includegraphics[width=6in]{images/modeling_decision_3.png}
+
+	      Note that here it’s possible to reach the deleted photo1 from the new Nicebook state, but as we mentioned earlier, we will make it impossible for any user of the new state to view it (see function getContentsInState). Therefore, from a user’s point of view, virtually there’s no difference. We decided to follow this strategy for Tags as well.
+
+	\item \textbf{Users can belong to multiple Nicebooks}\\
+	      Following the deletion design, we allowed users to belong to multiple states. This is because, when we use an action to change a specific user’s state, it is difficult to change all the related user states.
+
+	      For example, in the following diagram. We apply addPhoto action to user1, so user1 will be user1 and change its state. However, user1 has a friend relationship. The issue we face is how we maintain the relationship with the new user. We cannot create a new state for all users with a relationship with user1, like user2.
+
+	      \includegraphics[width=6in]{images/multiple_nicebooks.png}
+
+	      To solve this problem and the one mentioned in the previous section, we must users to be able to belong to multiple states. In this case, user1’s friend user2 can belong to both the new and old states. Using this method, we simply update the main user’s or content’s state in each action, making it easier to implement actions. Leaving our canView to handle users belonging to multiple states, which we will explain in the next section.
+
+	\item \textbf{canView Implementation}\\
+	      Respecting the assumptions we made in the previous sections, we defined our canView function by combining the following rules:
+	      \begin{enumerate}
+		      \item To be able to view that content, the owner of that content must exist under that state
+		            \begin{enumerate}
+			            \item We can extract all the viewable content by tracing from the state to the users and its own contents
+		            \end{enumerate}
+		      \item Privacy settings
+	      \end{enumerate}
+	      In the following example, Photo1 is viewable from state1, but in state2 it is not viewable, because the owner doesn’t belong to state2.
+
+	      \includegraphics[width=6in]{images/canview.png}
+
+	      We follow the same for tags. A Tag is viewable only if the tagged user exists in that state.
 \end{enumerate}
 
 \subsection{Describe any invariants that are not explicitly mentioned in the given document but were discovered during the modeling process.}
-\subsection{Describe an invariant that was violated by an operation in your model and how it was fixed.}
-\subsection{List the scope used for the analysis of invariant preservation. Why did you choose this scope, and why do you
-	think it is sufficient?}
+Following are the constraints and invariants that weren’t explicitly defined in the project specification but were discovered in the process
+\begin{enumerate}
+	\item A nested comment chain cannot have cycles: A comment cannot be used to comment on itself or one of its “child” comments.
 
+	      \includegraphics[width=5in]{images/invariant_1.png}
+
+	\item A User cannot be friends with itself, however, loops in friendships are allowed.
+
+	      \includegraphics[width=5in]{images/invariant_2.png}
+
+	\item Users can only be friends with users who share a state with the user.
+
+	      \includegraphics[width=5in]{images/invariant_3.png}
+
+	\item A user cannot be tagged in the same photo by two different tag instances.
+
+	      \includegraphics[width=5in]{images/invariant_4.png}
+
+	\item Content should have exactly one owner in a state
+
+	      \includegraphics[width=5in]{images/invariant_5.png}
+
+	\item A Tag instance should be mapped to exactly one pair of users in a state.
+
+	      \includegraphics[width=5in]{images/invariant_6.png}
+
+	\item While we check for commenting privileges and tagging privileges during operations that connect a pre-state and a post-state, we also must make sure that existing comments and tags satisfy the privileges that are required to add them. Therefore, as part of the invariants, we have defined two invariants: invaraintNoCommentIsPresentWithoutPrivileges and invariantNoTagIsPresentWithoutPrivileges that ensure that comments added are placed there in accordance with the privileges defined in canCommentOn, and the tags are existing on a photo where the the tagger and the tagged user are friends and the photo is viewable to both of them. In the diagram below, User C should not be able to comment on Comment 1 as it doesn’t even have the privilege to view Comment 1. Therefore the following is an invalid state.
+
+	      \includegraphics[width=6in]{images/invariant_7.png}
+\end{enumerate}
+\subsection{Describe an invariant that was violated by an operation in your model and how it was fixed.}
+We defined an invariant named “invariantUserCanOnlyBeFriendsWithUsersInTheSameState
+. This invariant defines that users cannot have a relationship with a friend in another state.\\
+
+In addTag action, we defined two arguments: taggee who is a user to be tagged, and tagger who is a user to tag. In precondition, we declared that tagger should be tagged’s friend based on the spec, which said that “A user only tagged by its friends.”\\
+
+At the first implementation, we changed only taggee’s state and promoted it as a new tagee because we designed how the system sees the tags in the current state as  “we can see the tag in the current state if and only if the tag has a tagged user that belongs to that state.” However, when we tried to generate instances, we noticed that this action doesn’t create any instances.\\
+
+After some debugging, we found that addTag action violates “invariantUserCanOnlyBeFriendsWithUsersInTheSameState,” because we didn’t change the tagger’s state. Taggee is in the new state, but tagger is in the old state, but they are friends, which violates the invariant.\\
+
+We fixed this problem by removing the invariant that constrained users to be friends with users of the same state. We then added a constraint that allows users to be friends with others who the user shares a state with.\\
+\subsection{List the scope used for the analysis of invariant preservation. Why did you choose this scope, and why do you think it is sufficient?}
+
+We have used the scope of 5 for the analysis of invariant preservation. We believe that the default scope, which is 3, was sometimes insufficient for representation actions such as removeTag or removePhoto, where we might want to 'copy' multiple objects to the new state. We wanted to ensure that alloy can comfortably generating instances when attempting to generate instances for checking Privacy Violations. The scope of 5 is sufficient for testing out our model, because none of our actions involve copying of more than two instances of an object, so 5 gives us more than enough room to test the cases which have multiple items linked to these items that are being copied.
 \section{Task 2}
 \subsection{Define an Alloy function called canView, which takes at least one parameter that represents some user in the
 	social network, and returns the set of all content that can be viewed by that user. You may use any number of
